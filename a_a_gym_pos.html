@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kasir - A.A Gym</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aagreen: '#39FF14',
+                        aadark: '#0a0a0a',
+                        card: '#121212',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #050505; 
+            color: #ffffff; 
+            overflow: hidden; /* Prevent body scroll for app-like feel */
+        }
+        /* Custom scrollbar for POS */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #39FF14;
+        }
+        
+        .glass-panel {
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .item-card {
+            transition: all 0.2s ease;
+        }
+        .item-card:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body class="antialiased font-sans h-screen flex text-sm">
+
+    <!-- Sidebar -->
+    <aside id="main-sidebar" class="w-64 glass-panel h-full flex flex-col justify-between z-50 shrink-0 shadow-2xl transition-all duration-300 absolute md:relative -translate-x-full md:translate-x-0">
+        <div>
+            <!-- Logo & Toggle -->
+            <div class="h-20 flex items-center justify-between px-6 border-b border-gray-800">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <img src="logo gym.jpg" alt="Logo" class="w-10 h-10 rounded-full object-cover shadow-[0_0_10px_rgba(57,255,20,0.3)] shrink-0">
+                    <span class="sidebar-text text-xl font-black italic tracking-tighter text-white transition-opacity duration-300">A.A <span class="text-aagreen">POS</span></span>
+                </div>
+                <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white transition hidden md:block">
+                    <i id="sidebar-icon" class="fas fa-chevron-left text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Nav Menu -->
+            <div class="py-6 px-3 flex flex-col gap-2">
+                <a href="#" onclick="switchView('kasir', this)" class="nav-btn active flex items-center gap-4 px-3 py-4 rounded-xl bg-gradient-to-r from-aagreen/20 to-transparent text-aagreen border-l-4 border-aagreen transition-all" title="Kasir">
+                    <i class="fas fa-cash-register text-lg shrink-0 w-6 text-center"></i>
+                    <span class="sidebar-text font-bold whitespace-nowrap transition-opacity duration-300" data-i18n="nav_kasir">Kasir</span>
+                </a>
+
+                <a href="#" onclick="switchView('member', this)" class="nav-btn flex items-center gap-4 px-3 py-4 rounded-xl text-gray-500 hover:text-white hover:bg-gray-800 transition-all" title="Member">
+                    <i class="fas fa-users text-lg shrink-0 w-6 text-center"></i>
+                    <span class="sidebar-text font-semibold whitespace-nowrap transition-opacity duration-300" data-i18n="nav_member">Member</span>
+                </a>
+                <a href="#" onclick="switchView('laporan', this)" class="nav-btn flex items-center gap-4 px-3 py-4 rounded-xl text-gray-500 hover:text-white hover:bg-gray-800 transition-all" title="Laporan">
+                    <i class="fas fa-chart-line text-lg shrink-0 w-6 text-center"></i>
+                    <span class="sidebar-text font-semibold whitespace-nowrap transition-opacity duration-300" data-i18n="nav_laporan">Laporan</span>
+                </a>
+                <a href="#" onclick="switchView('kehadiran', this)" class="nav-btn flex items-center gap-4 px-3 py-4 rounded-xl text-gray-500 hover:text-white hover:bg-gray-800 transition-all" title="Kehadiran">
+                    <i class="fas fa-clipboard-check text-lg shrink-0 w-6 text-center"></i>
+                    <span class="sidebar-text font-semibold whitespace-nowrap transition-opacity duration-300" data-i18n="nav_kehadiran">Kehadiran</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- User Profile & Tools -->
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center justify-between mb-4 sidebar-text">
+                <button onclick="toggleLang()" class="w-full bg-gray-800 text-white text-xs font-bold py-2 rounded-lg hover:bg-gray-700 transition border border-gray-700 shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-language text-aagreen"></i> <span id="lang-indicator">ID &rarr; EN</span>
+                </button>
+            </div>
+            <div class="flex items-center gap-3 p-2 rounded-xl bg-gray-900/50 cursor-pointer hover:bg-gray-800 transition overflow-hidden group relative">
+                <img src="https://ui-avatars.com/api/?name=Admin+Kasir&background=39FF14&color=000" alt="Admin" class="w-8 h-8 rounded-full shrink-0">
+                <div class="sidebar-text transition-opacity duration-300 whitespace-nowrap flex-grow">
+                    <p class="text-xs font-bold text-white mt-1">Admin Kasir</p>
+                </div>
+                <a href="a_a_gym_admin.html" class="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-aagreen text-black w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold hover:scale-110" title="Buka Dashboard Admin">
+                    <i class="fas fa-shield-alt"></i>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" onclick="toggleSidebarMobile()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0"></div>
+
+    <!-- Main Workspace (Kasir View) -->
+    <div id="view-kasir" class="view-panel flex-grow flex h-full overflow-hidden bg-gradient-to-br from-[#0a0a0a] to-[#050505]">
+        <main class="flex-grow flex flex-col h-full overflow-hidden">
+            
+            <!-- Topbar -->
+        <header class="h-20 glass-panel border-b border-gray-800 px-4 md:px-6 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3 w-full max-w-xl">
+                <button onclick="toggleSidebarMobile()" class="md:hidden text-gray-400 hover:text-white p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="relative w-full">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="search-product" placeholder="Cari produk atau scan barcode..." class="w-full bg-[#121212] border border-gray-700 text-white px-11 py-3 rounded-full focus:outline-none focus:border-aagreen focus:shadow-[0_0_10px_rgba(57,255,20,0.2)] transition text-sm">
+                </div>
+            </div>
+            
+            <!-- Info & Actions -->
+            <div class="flex items-center gap-6 ml-4 shrink-0">
+                <div class="text-right hidden sm:block">
+                    <p id="current-date" class="text-xs text-gray-400 font-medium whitespace-nowrap">Senin, 10 Okt 2026</p>
+                    <p id="current-time" class="text-lg font-black text-white whitespace-nowrap">12:30:45</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Product Area & Categories -->
+        <div class="flex-grow flex flex-col p-6 overflow-hidden">
+            <!-- Category Tabs -->
+            <div class="flex gap-3 overflow-x-auto pb-2 mb-4 scrollbar-hide shrink-0">
+                <button onclick="filterCategory('all')" class="cat-btn active bg-aagreen text-black px-6 py-2 rounded-full font-bold whitespace-nowrap shadow-[0_0_15px_rgba(57,255,20,0.3)] transition">Semua</button>
+                <button onclick="filterCategory('suplemen')" class="cat-btn bg-[#1a1a1a] text-gray-400 border border-gray-800 px-6 py-2 rounded-full font-semibold whitespace-nowrap hover:bg-gray-800 hover:text-white transition">Suplemen</button>
+                <button onclick="filterCategory('minuman')" class="cat-btn bg-[#1a1a1a] text-gray-400 border border-gray-800 px-6 py-2 rounded-full font-semibold whitespace-nowrap hover:bg-gray-800 hover:text-white transition">Minuman</button>
+                <button onclick="filterCategory('merch')" class="cat-btn bg-[#1a1a1a] text-gray-400 border border-gray-800 px-6 py-2 rounded-full font-semibold whitespace-nowrap hover:bg-gray-800 hover:text-white transition">Merchandise</button>
+                <button onclick="filterCategory('tiket')" class="cat-btn bg-[#1a1a1a] text-gray-400 border border-gray-800 px-6 py-2 rounded-full font-semibold whitespace-nowrap hover:bg-gray-800 hover:text-white transition">Tiket Gym</button>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="product-grid" class="flex-grow overflow-y-auto grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-10 content-start">
+                <!-- Products will be injected here via JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart / Bill Section -->
+    <aside class="w-80 lg:w-96 glass-panel border-l border-gray-800 flex flex-col h-full z-20 shrink-0 relative">
+        <!-- Customer Info -->
+        <div class="p-5 border-b border-gray-800 shrink-0">
+            <h2 class="text-xl font-bold flex items-center gap-2"><i class="fas fa-shopping-basket text-aagreen"></i> Pesanan Baru</h2>
+            <!-- Hidden inputs to retain logic -->
+            <input type="hidden" id="member-input" value="">
+            <div id="member-success" class="hidden"></div>
+        </div>
+
+        <!-- Cart Items list -->
+        <div id="cart-items" class="flex-grow overflow-y-auto p-4 space-y-3">
+            <!-- Empty state -->
+            <div id="empty-cart" class="h-full flex flex-col items-center justify-center text-gray-600">
+                <i class="fas fa-shopping-cart text-5xl mb-4 opacity-20"></i>
+                <p class="font-medium">Keranjang masih kosong</p>
+            </div>
+            <!-- Items will appear here -->
+        </div>
+
+        <!-- Bill Calculation & Checkout -->
+        <div class="p-5 bg-[#050505] border-t border-gray-800 shrink-0">
+            <div class="space-y-2 mb-4 text-sm font-medium text-gray-400">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span id="subtotal">Rp 0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Diskon</span>
+                    <span id="discount" class="text-tred">-Rp 0</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Pajak (11%)</span>
+                    <span id="tax">Rp 0</span>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-end mb-6 py-4 border-t border-gray-800">
+                <span class="text-gray-300 font-bold text-lg">Total</span>
+                <span id="grand-total" class="text-3xl font-black text-aagreen tracking-tight">Rp 0</span>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button onclick="selectPayment('tunai')" class="pay-btn bg-gray-800 border border-gray-700 text-white py-3 rounded-lg flex flex-col items-center gap-1 hover:border-aagreen hover:text-aagreen transition">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span class="text-[10px] font-bold">TUNAI</span>
+                </button>
+                <button onclick="selectPayment('qris')" class="pay-btn bg-gray-800 border border-gray-700 text-white py-3 rounded-lg flex flex-col items-center gap-1 hover:border-aagreen hover:text-aagreen transition">
+                    <i class="fas fa-qrcode"></i>
+                    <span class="text-[10px] font-bold">QRIS</span>
+                </button>
+            </div>
+
+            <button onclick="processCheckout()" id="checkout-btn" class="w-full bg-gray-800 text-gray-500 font-black uppercase tracking-widest py-4 rounded-xl cursor-not-allowed transition duration-300 flex items-center justify-center gap-2">
+                Bayar Sekarang <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </aside>
+    </div> <!-- End view-kasir -->
+
+
+    <!-- Member View -->
+    <div id="view-member" class="view-panel hidden flex-grow flex-col h-full overflow-hidden bg-[#050505] p-8 relative">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebarMobile()" class="md:hidden text-gray-400 hover:text-white p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-3xl font-black text-white" data-i18n="title_member">Data <span class="text-aagreen">Member</span></h2>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="bukaDaftarBaru()" class="bg-aagreen text-black font-bold px-4 py-2 rounded-lg hover:bg-green-400 transition shadow-[0_0_15px_rgba(57,255,20,0.4)]" data-i18n="btn_daftar_baru"><i class="fas fa-user-plus mr-2"></i>Daftar Baru</button>
+            </div>
+        </div>
+
+        <!-- Check-in Gym Section Redesigned -->
+        <div class="relative bg-gradient-to-br from-aagreen/20 via-[#121212] to-[#0a0a0a] border border-aagreen/30 p-8 rounded-3xl mb-8 flex flex-col md:flex-row items-center justify-between shadow-[0_0_40px_rgba(57,255,20,0.15)] overflow-hidden">
+            <!-- Decorative Glow -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-aagreen/10 blur-[80px] rounded-full pointer-events-none"></div>
+            
+            <div class="mb-6 md:mb-0 z-10 flex items-center gap-6">
+                <div class="w-16 h-16 bg-aagreen/10 rounded-2xl flex items-center justify-center border border-aagreen/40 relative">
+                    <i class="fas fa-expand text-3xl text-aagreen absolute animate-pulse"></i>
+                    <i class="fas fa-qrcode text-xl text-aagreen/50"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-white mb-1 uppercase tracking-wider">Tap / Scan ID Card</h3>
+                    <p class="text-sm text-aagreen font-semibold">Sistem Verifikasi Kehadiran Otomatis</p>
+                </div>
+            </div>
+
+            <div class="flex w-full md:w-auto gap-3 items-center relative z-10">
+                <div class="relative w-full md:w-72">
+                    <i class="fas fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg"></i>
+                    <input type="text" id="checkin-input" placeholder="AAGYM-XXXX" class="w-full bg-black/60 border-2 border-gray-700 text-white text-lg font-mono font-bold pl-12 pr-4 py-4 rounded-xl focus:outline-none focus:border-aagreen focus:shadow-[0_0_20px_rgba(57,255,20,0.3)] transition uppercase placeholder-gray-600">
+                </div>
+                <button onclick="prosesCheckin()" class="bg-aagreen text-black h-full px-8 py-4 rounded-xl font-black text-lg hover:bg-green-400 transition shadow-[0_0_15px_rgba(57,255,20,0.4)] flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt mr-2"></i> IN
+                </button>
+            </div>
+        </div>
+
+        <!-- Member Datatable -->
+        <div class="bg-[#121212] rounded-2xl border border-gray-800 flex-grow flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex flex-col md:flex-row justify-between items-center bg-[#0a0a0a] gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center text-xs text-gray-400">
+                        <span>Show</span>
+                        <select class="mx-2 bg-[#121212] border border-gray-700 rounded px-2 py-1 text-white focus:outline-none focus:border-aagreen">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>entries</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-grow md:flex-grow-0">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                        <input type="text" placeholder="Cari ID, Nama, No Telp..." class="w-full md:w-64 bg-[#121212] border border-gray-700 text-white text-xs px-8 py-2 rounded-lg focus:outline-none focus:border-aagreen transition">
+                    </div>
+                </div>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#1a1a1a] text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="p-4 font-bold border-b border-gray-800">ID Member</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Nama Lengkap</th>
+                            <th class="p-4 font-bold border-b border-gray-800">No. Telepon</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Paket</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Expired</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Status</th>
+                            <th class="p-4 font-bold border-b border-gray-800 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-gray-800/50 hover:bg-[#1a1a1a]/50 transition text-gray-300">
+                            <td class="p-4 font-mono text-aagreen font-bold">AAGYM-1234</td>
+                            <td class="p-4 font-bold text-white">Budi Santoso</td>
+                            <td class="p-4 text-xs">0812-3456-7890</td>
+                            <td class="p-4"><span class="text-yellow-500 text-xs"><i class="fas fa-crown"></i> Platinum (1 Thn)</span></td>
+                            <td class="p-4 text-xs">12 Des 2026</td>
+                            <td class="p-4">
+                                <span class="bg-aagreen/20 text-aagreen border border-aagreen/30 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest">Active</span>
+                            </td>
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button onclick="document.getElementById('checkin-input').value='AAGYM-1234'; prosesCheckin()" class="bg-aagreen text-black px-3 py-1 rounded hover:bg-green-400 transition text-xs font-bold" title="Check-in">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </button>
+                                    <button class="bg-blue-600/20 text-blue-500 border border-blue-600/50 px-3 py-1 rounded hover:bg-blue-600 hover:text-white transition text-xs font-bold" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="document.getElementById('member-input').value='AAGYM-1234'; cekMember()" class="bg-gray-800 text-gray-400 px-3 py-1 rounded hover:bg-gray-700 hover:text-white transition text-xs border border-gray-700" title="Detail">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border-b border-gray-800/50 hover:bg-[#1a1a1a]/50 transition text-gray-300">
+                            <td class="p-4 font-mono text-gray-500 font-bold">AAGYM-5678</td>
+                            <td class="p-4 font-bold text-gray-400">Andi Pratama</td>
+                            <td class="p-4 text-xs">0857-1122-3344</td>
+                            <td class="p-4 text-xs">Basic (1 Bln)</td>
+                            <td class="p-4 text-xs text-red-500">1 Okt 2026</td>
+                            <td class="p-4">
+                                <span class="bg-red-500/20 text-red-500 border border-red-500/30 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest">Expired</span>
+                            </td>
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button onclick="bukaPerpanjangForm('AAGYM-5678', 'Andi Pratama', '0857-1122-3344')" class="bg-red-600/20 border border-red-600/50 text-red-500 px-3 py-1 rounded hover:bg-red-600 hover:text-white transition text-xs font-bold whitespace-nowrap" title="Perpanjang">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button class="bg-blue-600/20 text-blue-500 border border-blue-600/50 px-3 py-1 rounded hover:bg-blue-600 hover:text-white transition text-xs font-bold" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="document.getElementById('member-input').value='AAGYM-5678'; cekMember()" class="bg-gray-800 text-gray-400 px-3 py-1 rounded hover:bg-gray-700 hover:text-white transition text-xs border border-gray-700" title="Detail">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 border-t border-gray-800 bg-[#0a0a0a] flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+                <div class="text-gray-400">
+                    Showing 1 to 2 of 2 entries
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-500 cursor-not-allowed">Previous</button>
+                    <button class="px-3 py-1 border border-aagreen rounded bg-aagreen/20 text-aagreen font-bold">1</button>
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-500 cursor-not-allowed">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daftar Member View -->
+    <div id="view-daftar-member" class="view-panel hidden flex-grow flex-col h-full overflow-hidden bg-[#050505] p-8 relative overflow-y-auto">
+        <div class="flex items-center gap-4 mb-8 border-b border-gray-800 pb-4">
+            <button onclick="switchView('member', document.querySelectorAll('.nav-btn')[1])" class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition"><i class="fas fa-arrow-left"></i></button>
+            <h2 id="reg-form-title" class="text-3xl font-black text-white">Registrasi <span class="text-aagreen">Member Baru</span></h2>
+        </div>
+
+        <div class="max-w-4xl mx-auto w-full space-y-6 pb-20">
+            <!-- Data Diri -->
+            <div class="bg-[#121212] border border-gray-800 p-6 rounded-2xl">
+                <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-id-card text-aagreen mr-2"></i>Data Diri</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="reg-id-container" class="hidden md:col-span-2">
+                        <label class="block text-gray-400 text-xs font-bold mb-2">ID Member</label>
+                        <input type="text" id="reg-id" readonly class="w-full bg-[#1a1a1a] border border-gray-700 text-aagreen font-mono font-bold px-4 py-3 rounded-lg focus:outline-none opacity-80 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs font-bold mb-2">Nama Lengkap</label>
+                        <input type="text" id="reg-name" placeholder="Masukkan nama..." class="w-full bg-[#0a0a0a] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-aagreen transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs font-bold mb-2">No. Telepon / WA</label>
+                        <input type="text" id="reg-phone" placeholder="08xxxxxxxxxx" class="w-full bg-[#0a0a0a] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-aagreen transition text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pilihan Paket -->
+            <div class="bg-[#121212] border border-gray-800 p-6 rounded-2xl">
+                <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-crown text-aagreen mr-2"></i>Pilih Paket Member</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="reg-paket" value="Mingguan" class="peer sr-only" onchange="updateTrainerSchedule()">
+                        <div class="p-4 rounded-xl border border-gray-700 bg-[#0a0a0a] peer-checked:border-aagreen peer-checked:bg-aagreen/10 transition">
+                            <h4 class="text-white font-bold text-lg mb-1">Mingguan</h4>
+                            <p class="text-gray-400 text-sm">Akses Gym 1 Minggu</p>
+                            <p class="text-aagreen font-black mt-2">Rp 100.000</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="reg-paket" value="Basic" class="peer sr-only" checked onchange="updateTrainerSchedule()">
+                        <div class="p-4 rounded-xl border border-gray-700 bg-[#0a0a0a] peer-checked:border-aagreen peer-checked:bg-aagreen/10 transition">
+                            <h4 class="text-white font-bold text-lg mb-1">Basic (1 Bulan)</h4>
+                            <p class="text-gray-400 text-sm">Akses Gym 24/7</p>
+                            <p class="text-aagreen font-black mt-2">Rp 350.000</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="reg-paket" value="Platinum" class="peer sr-only" onchange="updateTrainerSchedule()">
+                        <div class="p-4 rounded-xl border border-gray-700 bg-[#0a0a0a] peer-checked:border-aagreen peer-checked:bg-aagreen/10 transition">
+                            <h4 class="text-white font-bold text-lg mb-1">Platinum (1 Tahun)</h4>
+                            <p class="text-gray-400 text-sm">Akses Gym + Kelas GX</p>
+                            <p class="text-aagreen font-black mt-2">Rp 3.500.000</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pilihan Jadwal & Trainer -->
+            <div class="bg-[#121212] border border-gray-800 p-6 rounded-2xl">
+                <h3 class="text-xl font-bold text-white mb-4"><i class="fas fa-calendar-alt text-aagreen mr-2"></i>Personal Trainer & Jadwal</h3>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-400 text-xs font-bold mb-2">Pilih Personal Trainer (Opsional)</label>
+                    <select id="reg-trainer" onchange="updateTrainerSchedule()" class="w-full bg-[#0a0a0a] border border-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-aagreen transition text-sm">
+                        <option value="none">Tanpa PT (Latihan Mandiri / Bebas)</option>
+                        <option value="pt-budi">Coach Budi (Bodybuilding)</option>
+                        <option value="pt-siti">Coach Siti (Zumba & Aerobic)</option>
+                        <option value="pt-arya">Coach Arya (CrossFit)</option>
+                    </select>
+                </div>
+
+                <div id="trainer-calendar-container" class="hidden border-t border-gray-800 pt-6">
+                    <label class="block text-gray-400 text-xs font-bold mb-3">Info Jadwal Latihan <span id="trainer-name-label" class="text-aagreen"></span></label>
+                    
+                    <!-- Simulated Calendar Grid (Informational only) -->
+                    <div class="grid grid-cols-7 gap-2 text-center text-xs mb-2">
+                        <div class="text-gray-500 font-bold">Min</div><div class="text-gray-500 font-bold">Sen</div><div class="text-gray-500 font-bold">Sel</div><div class="text-gray-500 font-bold">Rab</div><div class="text-gray-500 font-bold">Kam</div><div class="text-gray-500 font-bold">Jum</div><div class="text-gray-500 font-bold">Sab</div>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-2 mb-4">
+                        <!-- JS injected days -->
+                    </div>
+                    <p class="text-xs text-gray-500 italic mt-2" id="calendar-info-text">*Jadwal di atas hanya sebagai informasi kalender rutinitas trainer.</p>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-gray-800 text-right">
+                <button onclick="prosesPendaftaranBaru()" class="bg-aagreen text-black font-black uppercase tracking-widest px-10 py-4 rounded-xl hover:bg-green-400 transition shadow-[0_0_20px_rgba(57,255,20,0.4)] text-lg">
+                    Lanjutkan ke Pembayaran
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Laporan View -->
+    <div id="view-laporan" class="view-panel hidden flex-grow flex-col h-full overflow-hidden bg-[#050505] p-8 relative overflow-y-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebarMobile()" class="md:hidden text-gray-400 hover:text-white p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-3xl font-black text-white" data-i18n="title_laporan">Laporan <span class="text-aagreen">Penjualan</span></h2>
+            </div>
+            
+            <!-- Filter Bar -->
+            <div class="flex flex-wrap items-center gap-3 bg-[#121212] p-2 rounded-xl border border-gray-800">
+                <div class="flex items-center gap-2 px-3 border-r border-gray-700">
+                    <input type="radio" name="filter-type" id="filter-date" value="date" class="accent-aagreen" checked onchange="toggleFilterType()">
+                    <label for="filter-date" class="text-xs text-gray-300 font-bold cursor-pointer">Tanggal</label>
+                    
+                    <input type="radio" name="filter-type" id="filter-month" value="month" class="accent-aagreen ml-2" onchange="toggleFilterType()">
+                    <label for="filter-month" class="text-xs text-gray-300 font-bold cursor-pointer">Bulan</label>
+                </div>
+                
+                <div id="filter-date-inputs" class="flex items-center gap-2">
+                    <input type="date" id="laporan-date-start" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                    <span class="text-gray-500 text-xs">-</span>
+                    <input type="date" id="laporan-date-end" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                </div>
+                
+                <div id="filter-month-inputs" class="hidden items-center gap-2">
+                    <select id="laporan-bulan" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                        <option value="1">Januari</option>
+                        <option value="2">Februari</option>
+                        <option value="3">Maret</option>
+                        <option value="4">April</option>
+                        <option value="5">Mei</option>
+                        <option value="6">Juni</option>
+                        <option value="7">Juli</option>
+                        <option value="8">Agustus</option>
+                        <option value="9">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                    <select id="laporan-tahun" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                </div>
+                
+                <button onclick="terapkanFilterLaporan()" class="bg-aagreen text-black font-bold px-4 py-2 rounded-lg text-xs hover:bg-green-400 transition ml-2 shadow-[0_0_10px_rgba(57,255,20,0.3)]">
+                    <i class="fas fa-filter mr-1"></i> Filter
+                </button>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 shrink-0">
+            <div class="bg-gradient-to-br from-[#121212] to-[#1a1a1a] p-6 rounded-2xl border border-gray-800">
+                <p class="text-gray-400 text-sm font-semibold mb-2">Total Pendapatan</p>
+                <h3 class="text-3xl font-black text-aagreen" id="lap-total-pendapatan">Rp 0</h3>
+            </div>
+            <div class="bg-gradient-to-br from-[#121212] to-[#1a1a1a] p-6 rounded-2xl border border-gray-800">
+                <p class="text-gray-400 text-sm font-semibold mb-2">Total Transaksi</p>
+                <h3 class="text-3xl font-black text-white" id="lap-total-transaksi">0</h3>
+            </div>
+            <div class="bg-gradient-to-br from-[#121212] to-[#1a1a1a] p-6 rounded-2xl border border-gray-800">
+                <p class="text-gray-400 text-sm font-semibold mb-2">Member Baru / Perpanjang</p>
+                <h3 class="text-3xl font-black text-white" id="lap-total-member">0 Orang</h3>
+            </div>
+        </div>
+
+        <div class="bg-[#121212] rounded-2xl border border-gray-800 flex-grow flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex flex-col md:flex-row justify-between items-center bg-[#0a0a0a] gap-4">
+                <div class="flex items-center gap-3">
+                    <h3 class="text-white font-bold mr-4"><i class="fas fa-list text-aagreen mr-2"></i>Detail Transaksi</h3>
+                    <div class="flex items-center text-xs text-gray-400">
+                        <span>Show</span>
+                        <select class="mx-2 bg-[#121212] border border-gray-700 rounded px-2 py-1 text-white focus:outline-none focus:border-aagreen">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>entries</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-grow md:flex-grow-0">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                        <input type="text" placeholder="Search data..." class="w-full md:w-48 bg-[#121212] border border-gray-700 text-white text-xs px-8 py-2 rounded-lg focus:outline-none focus:border-aagreen transition">
+                    </div>
+                    <button class="text-gray-400 hover:text-white transition text-xs border border-gray-700 px-3 py-2 rounded-lg hover:border-gray-500 whitespace-nowrap"><i class="fas fa-file-export mr-1"></i> Export</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#1a1a1a] text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="p-4 font-bold border-b border-gray-800">No. Transaksi</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Tanggal & Jam</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Item</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Member ID</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Pembayaran</th>
+                            <th class="p-4 font-bold border-b border-gray-800 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="laporan-table-body" class="text-sm">
+                        <!-- Data will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 border-t border-gray-800 bg-[#0a0a0a] flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+                <div class="text-gray-400" id="table-info">
+                    Showing 1 to 10 of 45 entries
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-500 cursor-not-allowed">Previous</button>
+                    <button class="px-3 py-1 border border-aagreen rounded bg-aagreen/20 text-aagreen font-bold">1</button>
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-400 hover:bg-gray-800 transition">2</button>
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-400 hover:bg-gray-800 transition">3</button>
+                    <span class="px-2 text-gray-500">...</span>
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-400 hover:bg-gray-800 transition">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kehadiran View -->
+    <div id="view-kehadiran" class="view-panel hidden flex-grow flex-col h-full overflow-hidden bg-[#050505] p-8 relative overflow-y-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebarMobile()" class="md:hidden text-gray-400 hover:text-white p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-3xl font-black text-white" data-i18n="title_kehadiran">Data <span class="text-aagreen">Kehadiran Gym</span></h2>
+            </div>
+            
+            <!-- Filter Bar -->
+            <div class="flex flex-wrap items-center gap-3 bg-[#121212] p-2 rounded-xl border border-gray-800">
+                <div class="flex items-center gap-2 px-3 border-r border-gray-700">
+                    <input type="radio" name="filter-kehadiran-type" id="filter-keh-date" value="date" class="accent-aagreen" checked onchange="toggleKehadiranFilterType()">
+                    <label for="filter-keh-date" class="text-xs text-gray-300 font-bold cursor-pointer">Tanggal</label>
+                    
+                    <input type="radio" name="filter-kehadiran-type" id="filter-keh-month" value="month" class="accent-aagreen ml-2" onchange="toggleKehadiranFilterType()">
+                    <label for="filter-keh-month" class="text-xs text-gray-300 font-bold cursor-pointer">Bulan</label>
+                </div>
+                
+                <div id="filter-keh-date-inputs" class="flex items-center gap-2">
+                    <input type="date" id="keh-date-start" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                    <span class="text-gray-500 text-xs">-</span>
+                    <input type="date" id="keh-date-end" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                </div>
+
+                <div id="filter-keh-month-inputs" class="hidden items-center gap-2">
+                    <select id="keh-month-select" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                        <option value="01">Januari</option>
+                        <option value="02">Februari</option>
+                        <option value="03">Maret</option>
+                        <option value="04">April</option>
+                        <option value="05">Mei</option>
+                        <option value="06">Juni</option>
+                        <option value="07">Juli</option>
+                        <option value="08">Agustus</option>
+                        <option value="09">September</option>
+                        <option value="10" selected>Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                    <select id="keh-year-select" class="bg-[#0a0a0a] border border-gray-700 text-white text-xs px-3 py-2 rounded-lg focus:outline-none focus:border-aagreen">
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+
+                <button onclick="terapkanFilterKehadiran()" class="bg-aagreen text-black px-4 py-2 rounded-lg font-bold text-xs hover:bg-green-400 transition ml-2 shadow-[0_0_10px_rgba(57,255,20,0.2)]">Filter</button>
+            </div>
+        </div>
+
+        <div class="bg-[#121212] rounded-2xl border border-gray-800 flex-grow flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-gray-800 flex flex-col md:flex-row justify-between items-center bg-[#0a0a0a] gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center text-xs text-gray-400">
+                        <span>Show</span>
+                        <select class="mx-2 bg-[#121212] border border-gray-700 rounded px-2 py-1 text-white focus:outline-none focus:border-aagreen">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span>entries</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-grow md:flex-grow-0">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                        <input type="text" placeholder="Cari Log Kehadiran..." class="w-full md:w-64 bg-[#121212] border border-gray-700 text-white text-xs px-8 py-2 rounded-lg focus:outline-none focus:border-aagreen transition">
+                    </div>
+                    <button class="text-gray-400 hover:text-white transition text-xs border border-gray-700 px-3 py-2 rounded-lg hover:border-gray-500 whitespace-nowrap"><i class="fas fa-file-export mr-1"></i> Export</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-[#1a1a1a] text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="p-4 font-bold border-b border-gray-800">Waktu Kedatangan</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Nama Lengkap</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Kategori</th>
+                            <th class="p-4 font-bold border-b border-gray-800">ID / Info</th>
+                            <th class="p-4 font-bold border-b border-gray-800">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kehadiran-table-body" class="text-sm">
+                        <!-- Data Kehadiran akan masuk ke sini -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 border-t border-gray-800 bg-[#0a0a0a] flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+                <div class="text-gray-400" id="kehadiran-table-info">
+                    Showing entries
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-500 cursor-not-allowed">Previous</button>
+                    <button class="px-3 py-1 border border-aagreen rounded bg-aagreen/20 text-aagreen font-bold">1</button>
+                    <button class="px-3 py-1 border border-gray-700 rounded bg-[#121212] text-gray-500 cursor-not-allowed">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QRIS Modal -->
+    <div id="qris-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col items-center" id="qris-modal-content">
+            <img src="logo gym.jpg" alt="Logo" class="w-12 h-12 rounded-full mb-2">
+            <h2 class="text-xl font-black text-black text-center mb-1">A.A Gym</h2>
+            <p class="text-gray-500 text-sm mb-6 text-center">NMID: ID1029384756</p>
+            
+            <div class="bg-gray-100 p-4 rounded-xl mb-6">
+                <!-- Mock QR Code -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=AAGYM_POS_PAYMENT" alt="QRIS" class="w-48 h-48">
+            </div>
+            
+            <p class="text-2xl font-black text-black mb-6" id="qris-amount">Rp 0</p>
+            
+            <button onclick="simulasiScanQRIS()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">
+                Simulasi Customer Scan
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Modal overlay -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#121212] border border-gray-700 rounded-3xl p-8 max-w-sm w-full shadow-[0_0_50px_rgba(57,255,20,0.2)] transform scale-95 transition-transform duration-300" id="payment-modal-content">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-aagreen/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-aagreen animate-pulse">
+                    <i class="fas fa-check text-4xl text-aagreen"></i>
+                </div>
+                <h2 class="text-2xl font-black text-white uppercase tracking-tight">Pembayaran Sukses</h2>
+                <p class="text-gray-400 mt-2 text-sm">Kembalian: <span class="text-aagreen font-bold">Rp 0</span></p>
+            </div>
+            
+            <div class="space-y-3">
+                <button onclick="printReceipt()" class="w-full bg-aagreen text-black font-bold py-3 rounded-xl hover:bg-green-400 transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(57,255,20,0.4)]">
+                    <i class="fas fa-print"></i> Cetak Struk
+                </button>
+                <button onclick="closePaymentModal()" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-700 border border-gray-700 transition">
+                    Transaksi Baru
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt / Struk Modal -->
+    <div id="receipt-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[300] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white text-black p-8 max-w-xs w-full shadow-2xl font-mono text-xs transform scale-95 transition-transform duration-300" id="receipt-modal-content">
+            <div class="text-center border-b border-dashed border-gray-400 pb-4 mb-4">
+                <h2 class="text-lg font-bold">A.A GYM</h2>
+                <p>Jl. Kebugaran No. 1, Bandung</p>
+                <p>Telp: 0822-2770-0189</p>
+            </div>
+            <div class="mb-4 border-b border-dashed border-gray-400 pb-4">
+                <p class="flex justify-between"><span>Kasir: Admin Kasir</span> <span id="struk-date"></span></p>
+                <p>No. Trans: <span id="struk-id"></span></p>
+                <p id="struk-member-container" class="hidden font-bold mt-1">ID Member: <span id="struk-member-id"></span></p>
+            </div>
+            
+            <div id="struk-items" class="mb-4 space-y-2 border-b border-dashed border-gray-400 pb-4">
+                <!-- Items injected here -->
+            </div>
+
+            <div class="mb-4 space-y-1">
+                <p class="flex justify-between"><span>Subtotal:</span> <span id="struk-sub">Rp 0</span></p>
+                <p class="flex justify-between text-red-500"><span>Diskon:</span> <span id="struk-disc">-Rp 0</span></p>
+                <p class="flex justify-between"><span>Pajak 11%:</span> <span id="struk-tax">Rp 0</span></p>
+                <p class="flex justify-between font-bold text-sm mt-2 pt-2 border-t border-dashed border-gray-400"><span>TOTAL:</span> <span id="struk-total">Rp 0</span></p>
+                <p class="flex justify-between mt-1"><span>Metode:</span> <span id="struk-method" class="uppercase"></span></p>
+            </div>
+            
+            <div class="text-center mt-6">
+                <p class="font-bold">TERIMA KASIH</p>
+                <p>Barang yang sudah dibeli tidak dapat ditukar/dikembalikan</p>
+            </div>
+
+            <div class="mt-8 flex gap-2 hide-on-print">
+                <button onclick="window.print()" class="flex-1 bg-black text-white font-bold py-2 rounded">PRINT</button>
+                <button onclick="closeReceiptModal()" class="flex-1 border border-black font-bold py-2 rounded hover:bg-gray-100">TUTUP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member Detail Modal -->
+    <div id="member-detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[400] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#121212] border border-gray-700 rounded-3xl p-8 max-w-lg w-full shadow-[0_0_50px_rgba(57,255,20,0.2)] transform scale-95 transition-transform duration-300 relative" id="member-detail-content">
+            <button onclick="closeMemberDetail()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fas fa-times text-2xl"></i></button>
+            
+            <div class="flex items-center gap-6 mb-6 pb-6 border-b border-gray-800">
+                <div class="w-24 h-24 bg-gray-800 rounded-2xl flex items-center justify-center text-aagreen text-4xl font-bold" id="md-initial">B</div>
+                <div>
+                    <h2 class="text-3xl font-black text-white" id="md-name">Budi Santoso</h2>
+                    <p class="text-gray-400 mb-2" id="md-id">AAGYM-1234</p>
+                    <span id="md-status" class="bg-aagreen/20 text-aagreen border border-aagreen px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Aktif</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-[#0a0a0a] p-4 rounded-xl border border-gray-800">
+                    <p class="text-xs text-gray-500 mb-1">Paket Saat Ini</p>
+                    <p class="font-bold text-white"><i class="fas fa-crown text-yellow-500 mr-2"></i>Platinum 1 Tahun</p>
+                </div>
+                <div class="bg-[#0a0a0a] p-4 rounded-xl border border-gray-800">
+                    <p class="text-xs text-gray-500 mb-1">Masa Aktif</p>
+                    <p class="font-bold text-white" id="md-exp"><i class="fas fa-calendar-check text-aagreen mr-2"></i>12 Des 2026</p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="font-bold text-white mb-3">Jadwal Kelas Hari Ini:</h3>
+                <div class="bg-blue-900/20 border border-blue-500/30 p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-blue-400">Pilates+ Beginner</p>
+                        <p class="text-xs text-gray-400">Studio 2 • 10:00 - 11:30</p>
+                    </div>
+                    <span class="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Terdaftar</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="prosesMasukGym()" id="btn-masuk-gym" class="flex-1 bg-aagreen text-black font-bold py-3 rounded-xl hover:bg-green-400 transition flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(57,255,20,0.4)]">
+                    <i class="fas fa-door-open"></i> Izinkan Masuk
+                </button>
+                <button onclick="perpanjangKasir()" class="flex-1 bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-700 border border-gray-700 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-sync-alt"></i> Perpanjang Member
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Centered Alert Modal -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[500] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#121212] border border-red-500/50 rounded-3xl p-8 max-w-sm w-full shadow-[0_0_50px_rgba(239,68,68,0.2)] transform scale-95 transition-transform duration-300 flex flex-col items-center text-center" id="custom-alert-content">
+            <div class="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4 border border-red-500">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+            </div>
+            <h2 class="text-xl font-black text-white mb-2 uppercase">Perhatian</h2>
+            <p class="text-gray-400 text-sm mb-6" id="custom-alert-message">Pesan alert di sini.</p>
+            <button onclick="closeCustomAlert()" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 transition">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- Walk-in Trainer Modal -->
+    <div id="walkin-trainer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[500] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#121212] border border-gray-700 rounded-3xl p-8 max-w-md w-full shadow-[0_0_50px_rgba(57,255,20,0.2)] transform scale-95 transition-transform duration-300 relative" id="walkin-trainer-content">
+            <button onclick="closeWalkinTrainerModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-aagreen/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-aagreen">
+                    <i class="fas fa-dumbbell text-3xl text-aagreen"></i>
+                </div>
+                <h2 class="text-2xl font-black text-white mb-2">Pilih Jenis Tiket</h2>
+                <p class="text-gray-400 text-sm">Apakah pelanggan ini akan didampingi oleh Personal Trainer?</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="addToCart(10, true); closeWalkinTrainerModal()" class="bg-[#1a1a1a] border border-gray-700 p-4 rounded-2xl hover:border-aagreen hover:bg-[#1a1a1a]/80 transition text-center group">
+                    <i class="fas fa-user text-3xl text-gray-500 group-hover:text-aagreen mb-2 transition"></i>
+                    <p class="font-bold text-white text-sm">Tanpa Pelatih</p>
+                    <p class="text-aagreen font-bold mt-1">Rp 50.000</p>
+                </button>
+                <button onclick="addToCart(11, true); closeWalkinTrainerModal()" class="bg-[#1a1a1a] border border-gray-700 p-4 rounded-2xl hover:border-aagreen hover:bg-[#1a1a1a]/80 transition text-center group">
+                    <i class="fas fa-user-ninja text-3xl text-gray-500 group-hover:text-aagreen mb-2 transition"></i>
+                    <p class="font-bold text-white text-sm">Pakai Pelatih</p>
+                    <p class="text-aagreen font-bold mt-1">Rp 150.000</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extend Member Modal -->
+    <div id="extend-member-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[500] hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-[#121212] border border-gray-700 rounded-3xl p-8 max-w-lg w-full shadow-[0_0_50px_rgba(57,255,20,0.2)] transform scale-95 transition-transform duration-300 relative" id="extend-member-content">
+            <button onclick="closeExtendModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-aagreen/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-aagreen">
+                    <i class="fas fa-sync-alt text-3xl text-aagreen"></i>
+                </div>
+                <h2 class="text-2xl font-black text-white mb-2">Perpanjang Membership</h2>
+                <p class="text-gray-400 text-sm">Pilih paket perpanjangan untuk member ini.</p>
+            </div>
+            <div class="flex flex-col gap-3">
+                <button onclick="addToCart(13, true); closeExtendModal(); switchView('kasir', document.querySelectorAll('.nav-btn')[0]); cekMember();" class="bg-[#1a1a1a] border border-gray-700 p-4 rounded-2xl hover:border-aagreen hover:bg-[#1a1a1a]/80 transition flex items-center justify-between group">
+                    <div class="text-left">
+                        <p class="font-bold text-white group-hover:text-aagreen transition">Basic (1 Bulan)</p>
+                    </div>
+                    <p class="text-aagreen font-bold">Rp 350.000</p>
+                </button>
+                <button onclick="addToCart(14, true); closeExtendModal(); switchView('kasir', document.querySelectorAll('.nav-btn')[0]); cekMember();" class="bg-[#1a1a1a] border border-gray-700 p-4 rounded-2xl hover:border-yellow-500 hover:bg-[#1a1a1a]/80 transition flex items-center justify-between group">
+                    <div class="text-left">
+                        <p class="font-bold text-white group-hover:text-yellow-500 transition">Gold (6 Bulan)</p>
+                    </div>
+                    <p class="text-yellow-500 font-bold">Rp 1.800.000</p>
+                </button>
+                <button onclick="addToCart(15, true); closeExtendModal(); switchView('kasir', document.querySelectorAll('.nav-btn')[0]); cekMember();" class="bg-[#1a1a1a] border border-gray-700 p-4 rounded-2xl hover:border-blue-400 hover:bg-[#1a1a1a]/80 transition flex items-center justify-between group">
+                    <div class="text-left">
+                        <p class="font-bold text-white group-hover:text-blue-400 transition">Platinum (1 Tahun)</p>
+                    </div>
+                    <p class="text-blue-400 font-bold">Rp 3.000.000</p>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // Language Dictionary & Logic
+        let currentLang = 'id';
+        const i18n = {
+            id: {
+                nav_kasir: "Kasir",
+                nav_member: "Member",
+                nav_laporan: "Laporan",
+                nav_kehadiran: "Kehadiran",
+                title_member: "Data <span class='text-aagreen'>Member</span>",
+                title_laporan: "Laporan <span class='text-aagreen'>Penjualan</span>",
+                title_kehadiran: "Data <span class='text-aagreen'>Kehadiran Gym</span>",
+                btn_daftar_baru: "<i class='fas fa-user-plus mr-2'></i>Daftar Baru",
+            },
+            en: {
+                nav_kasir: "Cashier",
+                nav_member: "Members",
+                nav_laporan: "Reports",
+                nav_kehadiran: "Attendance",
+                title_member: "<span class='text-aagreen'>Member</span> Data",
+                title_laporan: "Sales <span class='text-aagreen'>Report</span>",
+                title_kehadiran: "Gym <span class='text-aagreen'>Attendance</span>",
+                btn_daftar_baru: "<i class='fas fa-user-plus mr-2'></i>New Member",
+            }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'id' ? 'en' : 'id';
+            document.getElementById('lang-indicator').innerHTML = currentLang === 'id' ? 'ID &rarr; EN' : 'EN &rarr; ID';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[currentLang][key]) {
+                    el.innerHTML = i18n[currentLang][key];
+                }
+            });
+        }
+
+        // Sidebar Logic
+        let sidebarCollapsed = false;
+        function toggleSidebar() {
+            const sidebar = document.getElementById('main-sidebar');
+            const texts = document.querySelectorAll('.sidebar-text');
+            const icon = document.getElementById('sidebar-icon');
+            
+            sidebarCollapsed = !sidebarCollapsed;
+            
+            if(sidebarCollapsed) {
+                sidebar.classList.remove('w-64');
+                sidebar.classList.add('w-20');
+                texts.forEach(el => {
+                    el.classList.add('opacity-0');
+                    setTimeout(() => el.classList.add('hidden'), 300);
+                });
+                icon.classList.replace('fa-chevron-left', 'fa-chevron-right');
+            } else {
+                sidebar.classList.remove('w-20');
+                sidebar.classList.add('w-64');
+                texts.forEach(el => {
+                    el.classList.remove('hidden');
+                    setTimeout(() => el.classList.remove('opacity-0'), 10);
+                });
+                icon.classList.replace('fa-chevron-right', 'fa-chevron-left');
+            }
+        }
+
+        let mobileSidebarOpen = false;
+        function toggleSidebarMobile() {
+            const sidebar = document.getElementById('main-sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            mobileSidebarOpen = !mobileSidebarOpen;
+            
+            if(mobileSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // Database Produk Gym
+        const products = [
+            { id: 1, name: "Whey Protein Isolate 1kg", category: "suplemen", price: 850000, img: "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=500&auto=format&fit=crop", stock: 12 },
+            { id: 2, name: "BCAA Powder Green Apple", category: "suplemen", price: 350000, img: "https://images.unsplash.com/photo-1579722820308-d74e571900a9?w=500&auto=format&fit=crop", stock: 8 },
+            { id: 3, name: "Pre-Workout C4 Explosive", category: "suplemen", price: 420000, img: "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=500&auto=format&fit=crop", stock: 5 },
+            { id: 4, name: "Creatine Monohydrate 300g", category: "suplemen", price: 250000, img: "https://images.unsplash.com/photo-1579722820308-d74e571900a9?w=500&auto=format&fit=crop", stock: 20 },
+            { id: 5, name: "Mineral Water 600ml", category: "minuman", price: 5000, img: "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=500&auto=format&fit=crop", stock: 100 },
+            { id: 6, name: "Pocari Sweat 500ml", category: "minuman", price: 10000, img: "https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=500&auto=format&fit=crop", stock: 45 },
+            { id: 7, name: "A.A Gym T-Shirt Premium", category: "merch", price: 150000, img: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&auto=format&fit=crop", stock: 30 },
+            { id: 8, name: "A.A Gym Shaker Bottle", category: "merch", price: 75000, img: "https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=500&auto=format&fit=crop", stock: 50 },
+            { id: 9, name: "A.A Gym Hand Towel", category: "merch", price: 35000, img: "https://images.unsplash.com/photo-1616781284561-2483d4763fc0?w=500&auto=format&fit=crop", stock: 40 },
+            { id: 10, name: "Walk-in Gym 1 Visit (Tanpa Pelatih)", category: "tiket", price: 50000, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop", stock: 999 },
+            { id: 11, name: "Walk-in Gym 1 Visit (Pakai Pelatih)", category: "tiket", price: 150000, img: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&auto=format&fit=crop", stock: 999 },
+            { id: 12, name: "Kelas Zumba / Aerobic", category: "tiket", price: 35000, img: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&auto=format&fit=crop", stock: 999 },
+            { id: 13, name: "Perpanjangan Basic (1 Bln)", category: "tiket", price: 350000, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop", stock: 999 },
+            { id: 14, name: "Perpanjangan Gold (6 Bln)", category: "tiket", price: 1800000, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop", stock: 999 },
+            { id: 15, name: "Perpanjangan Platinum (1 Thn)", category: "tiket", price: 3000000, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop", stock: 999 },
+        ];
+
+        // Extend Member Modal Logic
+        function openExtendModal() {
+            const modal = document.getElementById('extend-member-modal');
+            const modalContent = document.getElementById('extend-member-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeExtendModal() {
+            const modal = document.getElementById('extend-member-modal');
+            const modalContent = document.getElementById('extend-member-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        let cart = [];
+        let selectedPayment = null;
+        let isMemberDiscount = false;
+
+        // Formatter Uang Rupiah
+        const formatRp = (angka) => {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        };
+
+        // Render Grid Produk
+        function renderProducts(catFilter = 'all', searchQuery = '') {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            
+            const filtered = products.filter(p => {
+                // Sembunyikan produk ID 11 (Walk-in + Trainer) dari Grid karena sudah di-handle oleh Modal ID 10
+                if (p.id === 11) return false;
+                
+                const matchCat = catFilter === 'all' || p.category === catFilter;
+                const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchCat && matchSearch;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = '<div class="col-span-full py-20 text-center text-gray-500"><i class="fas fa-box-open text-4xl mb-3"></i><p>Produk tidak ditemukan</p></div>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "item-card bg-[#121212] border border-gray-800 rounded-2xl overflow-hidden cursor-pointer hover:border-aagreen hover:shadow-[0_0_15px_rgba(57,255,20,0.1)] flex flex-col";
+                card.onclick = () => addToCart(p.id);
+                card.innerHTML = `
+                    <div class="h-32 bg-gray-900 relative overflow-hidden">
+                        <img src="${p.img}" class="w-full h-full object-cover opacity-70 hover:opacity-100 transition duration-300" alt="${p.name}">
+                        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur text-[10px] font-bold px-2 py-1 rounded text-gray-300">Stock: ${p.stock > 100 ? '∞' : p.stock}</div>
+                    </div>
+                    <div class="p-3 flex flex-col flex-grow justify-between">
+                        <h3 class="font-bold text-white text-xs mb-2 leading-tight">${p.name}</h3>
+                        <p class="text-aagreen font-black text-sm">${formatRp(p.price)}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Search Listener
+        document.getElementById('search-product').addEventListener('input', (e) => {
+            const activeBtn = document.querySelector('.cat-btn.active');
+            let cat = 'all';
+            if(activeBtn) {
+                if(activeBtn.innerText === 'Suplemen') cat = 'suplemen';
+                if(activeBtn.innerText === 'Minuman') cat = 'minuman';
+                if(activeBtn.innerText === 'Merchandise') cat = 'merch';
+                if(activeBtn.innerText === 'Tiket Gym') cat = 'tiket';
+            }
+            renderProducts(cat, e.target.value);
+        });
+
+        // Filter Category
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-aagreen', 'text-black', 'shadow-[0_0_15px_rgba(57,255,20,0.3)]', 'active');
+                btn.classList.add('bg-[#1a1a1a]', 'text-gray-400');
+            });
+            event.target.classList.remove('bg-[#1a1a1a]', 'text-gray-400');
+            event.target.classList.add('bg-aagreen', 'text-black', 'shadow-[0_0_15px_rgba(57,255,20,0.3)]', 'active');
+            
+            const searchVal = document.getElementById('search-product').value;
+            renderProducts(cat, searchVal);
+        }
+
+        // Cart Functions
+        function addToCart(id, skipModal = false) {
+            if (id === 10 && !skipModal) {
+                const modal = document.getElementById('walkin-trainer-modal');
+                const modalContent = document.getElementById('walkin-trainer-content');
+                
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+                return; // Stop here, modal will call addToCart(id, true)
+            }
+
+            const product = products.find(p => p.id === id);
+            const existingItem = cart.find(item => item.id === id);
+            
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function closeWalkinTrainerModal() {
+            const modal = document.getElementById('walkin-trainer-modal');
+            const modalContent = document.getElementById('walkin-trainer-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function updateQty(id, delta) {
+            const index = cart.findIndex(item => item.id === id);
+            if (index !== -1) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+                renderCart();
+            }
+        }
+
+        function renderCart() {
+            const cartContainer = document.getElementById('cart-items');
+            const emptyState = document.getElementById('empty-cart');
+            
+            // Clear current list except empty state
+            const items = cartContainer.querySelectorAll('.cart-item');
+            items.forEach(item => item.remove());
+
+            if (cart.length === 0) {
+                emptyState.style.display = 'flex';
+                updateTotals();
+                checkCheckoutStatus();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "cart-item bg-[#121212] border border-gray-800 rounded-xl p-3 flex justify-between items-center animate-[fadeIn_0.2s_ease-out]";
+                div.innerHTML = `
+                    <div class="flex-grow pr-3 overflow-hidden">
+                        <h4 class="text-xs font-bold text-white truncate">${item.name}</h4>
+                        <p class="text-aagreen text-[10px] font-bold mt-1">${formatRp(item.price)}</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-[#050505] rounded-lg border border-gray-800 p-1 shrink-0">
+                        <button onclick="updateQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-tred hover:bg-red-900/20 rounded"><i class="fas fa-minus text-[10px]"></i></button>
+                        <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="updateQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-aagreen hover:bg-aagreen/20 rounded"><i class="fas fa-plus text-[10px]"></i></button>
+                    </div>
+                `;
+                cartContainer.appendChild(div);
+            });
+
+            // Scroll to bottom
+            cartContainer.scrollTop = cartContainer.scrollHeight;
+            
+            updateTotals();
+            checkCheckoutStatus();
+        }
+
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            // Logic for discount if member (10%)
+            const discount = isMemberDiscount ? Math.round(subtotal * 0.10) : 0; 
+            
+            const tax = Math.round((subtotal - discount) * 0.11);
+            const grand = subtotal - discount + tax;
+
+            document.getElementById('subtotal').innerText = formatRp(subtotal);
+            document.getElementById('discount').innerText = '-' + formatRp(discount);
+            document.getElementById('tax').innerText = formatRp(tax);
+            document.getElementById('grand-total').innerText = formatRp(grand);
+        }
+
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.pay-btn').forEach(btn => {
+                btn.classList.remove('border-aagreen', 'text-aagreen', 'bg-aagreen/10');
+            });
+            event.currentTarget.classList.add('border-aagreen', 'text-aagreen', 'bg-aagreen/10');
+            checkCheckoutStatus();
+        }
+
+        function checkCheckoutStatus() {
+            const btn = document.getElementById('checkout-btn');
+            if (cart.length > 0 && selectedPayment) {
+                btn.classList.remove('bg-gray-800', 'text-gray-500', 'cursor-not-allowed');
+                btn.classList.add('bg-aagreen', 'text-black', 'shadow-[0_0_20px_rgba(57,255,20,0.4)]', 'hover:bg-green-400');
+                btn.disabled = false;
+            } else {
+                btn.classList.add('bg-gray-800', 'text-gray-500', 'cursor-not-allowed');
+                btn.classList.remove('bg-aagreen', 'text-black', 'shadow-[0_0_20px_rgba(57,255,20,0.4)]', 'hover:bg-green-400');
+                btn.disabled = true;
+            }
+        }
+
+        function processCheckout() {
+            if (cart.length === 0 || !selectedPayment) return;
+            
+            if (selectedPayment === 'qris') {
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                const discount = isMemberDiscount ? Math.round(subtotal * 0.10) : 0; 
+                const tax = Math.round((subtotal - discount) * 0.11);
+                const grand = subtotal - discount + tax;
+                document.getElementById('qris-amount').innerText = formatRp(grand);
+                
+                const modal = document.getElementById('qris-modal');
+                const modalContent = document.getElementById('qris-modal-content');
+                
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            } else {
+                showSuccessModal();
+                cekWalkinAttendance();
+            }
+        }
+        
+        function cekWalkinAttendance() {
+            // Jika ada transaksi Walk-in (ID 10 atau 11), catat di kehadiran
+            const walkin = cart.find(item => item.id === 10 || item.id === 11);
+            if (walkin) {
+                // Untuk non-member, selalu gunakan 'Gym Biasa'
+                const displayName = 'Gym Biasa';
+                
+                // Jika mereka membeli >1 tiket, catat sejumlah tiket
+                for(let i=0; i<walkin.qty; i++) {
+                    catatKehadiran(displayName, 'Non-Member', walkin.name);
+                }
+            }
+        }
+        
+        function simulasiScanQRIS() {
+            const modal = document.getElementById('qris-modal');
+            const modalContent = document.getElementById('qris-modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                showSuccessModal();
+                cekWalkinAttendance();
+            }, 300);
+        }
+
+        function showSuccessModal() {
+            const modal = document.getElementById('payment-modal');
+            const modalContent = document.getElementById('payment-modal-content');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closePaymentModal() {
+            const modal = document.getElementById('payment-modal');
+            const modalContent = document.getElementById('payment-modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Reset kasir
+                cart = [];
+                selectedPayment = null;
+                document.querySelectorAll('.pay-btn').forEach(btn => {
+                    btn.classList.remove('border-aagreen', 'text-aagreen', 'bg-aagreen/10');
+                });
+                renderCart();
+            }, 300);
+        }
+
+        function printReceipt() {
+            // Populate Receipt Data
+            document.getElementById('struk-date').innerText = new Date().toLocaleDateString('id-ID');
+            document.getElementById('struk-id').innerText = 'TRX-' + Math.floor(Math.random() * 1000000);
+            
+            const memberInput = document.getElementById('member-input').value.trim();
+            const memberContainer = document.getElementById('struk-member-container');
+            if (memberInput !== '') {
+                memberContainer.classList.remove('hidden');
+                document.getElementById('struk-member-id').innerText = memberInput.toUpperCase();
+            } else {
+                memberContainer.classList.add('hidden');
+            }
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const discount = isMemberDiscount ? Math.round(subtotal * 0.10) : 0; 
+            const tax = Math.round((subtotal - discount) * 0.11);
+            const grand = subtotal - discount + tax;
+            
+            const itemsContainer = document.getElementById('struk-items');
+            itemsContainer.innerHTML = '';
+            cart.forEach(item => {
+                itemsContainer.innerHTML += `
+                    <div class="flex justify-between">
+                        <span class="truncate pr-2">${item.name}</span>
+                        <span>${item.qty}x</span>
+                    </div>
+                    <div class="text-right text-gray-600 mb-1">${formatRp(item.price * item.qty)}</div>
+                `;
+            });
+
+            document.getElementById('struk-sub').innerText = formatRp(subtotal);
+            document.getElementById('struk-disc').innerText = '-' + formatRp(discount);
+            document.getElementById('struk-tax').innerText = formatRp(tax);
+            document.getElementById('struk-total').innerText = formatRp(grand);
+            document.getElementById('struk-method').innerText = selectedPayment;
+
+            // Show Receipt Modal
+            const modal = document.getElementById('receipt-modal');
+            const modalContent = document.getElementById('receipt-modal-content');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeReceiptModal() {
+            const modal = document.getElementById('receipt-modal');
+            const modalContent = document.getElementById('receipt-modal-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                closePaymentModal();
+            }, 300);
+        }
+
+        // Live Clock
+        setInterval(() => {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('id-ID', options);
+            
+            document.getElementById('current-time').innerText = timeStr;
+            document.getElementById('current-date').innerText = dateStr;
+        }, 1000);
+
+        // Cek Member Logic
+        function cekMember() {
+            const input = document.getElementById('member-input').value;
+            const successMsg = document.getElementById('member-success');
+            if (input.trim() !== '') {
+                successMsg.classList.remove('hidden');
+                isMemberDiscount = true;
+                updateTotals();
+            } else {
+                successMsg.classList.add('hidden');
+                isMemberDiscount = false;
+                updateTotals();
+            }
+        }
+
+        // Check-in Gym Logic
+        function prosesCheckin() {
+            const input = document.getElementById('checkin-input');
+            const val = input.value.trim().toUpperCase();
+            if (val !== '') {
+                // Tampilkan Modal Detail Member
+                const modal = document.getElementById('member-detail-modal');
+                const modalContent = document.getElementById('member-detail-content');
+                
+                // Simulate Active vs Expired (If input contains "EXP", treat as expired)
+                const isExpired = val.includes('EXP');
+                
+                document.getElementById('md-id').innerText = val;
+                document.getElementById('md-name').innerText = isExpired ? 'Andi Pratama' : 'Budi Santoso';
+                document.getElementById('md-initial').innerText = isExpired ? 'A' : 'B';
+
+                document.getElementById('md-status').innerText = isExpired ? 'KADALUARSA' : 'AKTIF';
+                document.getElementById('md-status').className = isExpired ? 
+                    'bg-red-500/20 text-red-500 border border-red-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider' : 
+                    'bg-aagreen/20 text-aagreen border border-aagreen px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider';
+                
+                document.getElementById('md-exp').innerHTML = isExpired ? 
+                    '<i class="fas fa-calendar-times text-red-500 mr-2"></i>1 Okt 2026' : 
+                    '<i class="fas fa-calendar-check text-aagreen mr-2"></i>12 Des 2026';
+
+                const btnMasuk = document.getElementById('btn-masuk-gym');
+                if (isExpired) {
+                    btnMasuk.disabled = true;
+                    btnMasuk.classList.remove('bg-aagreen', 'text-black', 'hover:bg-green-400', 'shadow-[0_0_15px_rgba(57,255,20,0.4)]');
+                    btnMasuk.classList.add('bg-gray-700', 'text-gray-500', 'cursor-not-allowed');
+                    btnMasuk.innerHTML = '<i class="fas fa-ban"></i> Akses Ditolak';
+                } else {
+                    btnMasuk.disabled = false;
+                    btnMasuk.classList.add('bg-aagreen', 'text-black', 'hover:bg-green-400', 'shadow-[0_0_15px_rgba(57,255,20,0.4)]');
+                    btnMasuk.classList.remove('bg-gray-700', 'text-gray-500', 'cursor-not-allowed');
+                    btnMasuk.innerHTML = '<i class="fas fa-door-open"></i> Izinkan Masuk';
+                }
+                
+                modal.classList.remove('hidden');
+                void modal.offsetWidth;
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }
+        }
+
+        function closeMemberDetail() {
+            const modal = document.getElementById('member-detail-modal');
+            const modalContent = document.getElementById('member-detail-content');
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        function catatKehadiran(nama, kategori, info) {
+            const tbody = document.getElementById('kehadiran-table-body');
+            const now = new Date();
+            const timeStr = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            let badgeCat = '';
+            if (kategori === 'Member') badgeCat = '<span class="bg-blue-500/20 text-blue-500 border border-blue-500/30 px-2 py-1 rounded text-[10px] font-bold uppercase">Member</span>';
+            else badgeCat = '<span class="bg-gray-700/50 text-gray-400 border border-gray-600 px-2 py-1 rounded text-[10px] font-bold uppercase">Walk-in/Non-Member</span>';
+
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-gray-800/50 hover:bg-[#1a1a1a]/50 transition text-gray-300';
+            tr.innerHTML = `
+                <td class="p-4 text-xs font-mono text-gray-400">${timeStr}</td>
+                <td class="p-4 font-bold text-white">${nama}</td>
+                <td class="p-4">${badgeCat}</td>
+                <td class="p-4 text-xs text-gray-400 font-mono">${info}</td>
+                <td class="p-4">
+                    <button class="text-gray-500 hover:text-red-500 transition" title="Hapus Data"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.insertBefore(tr, tbody.firstChild);
+        }
+
+        function prosesMasukGym() {
+            closeMemberDetail();
+            const input = document.getElementById('checkin-input');
+            const val = input.value;
+            
+            input.style.borderColor = '#39FF14';
+            input.style.color = '#39FF14';
+            input.value = "SILAKAN MASUK";
+            
+            // Catat ke Log Kehadiran
+            catatKehadiran(document.getElementById('md-name').innerText, 'Member', val);
+
+            setTimeout(() => {
+                input.style.borderColor = '#374151'; // gray-700
+                input.style.color = 'white';
+                input.value = '';
+            }, 3000);
+        }
+
+        function perpanjangKasir() {
+            closeMemberDetail();
+            // Switch to Kasir view
+            const kasirBtn = document.querySelector('.nav-btn'); // Kasir is first
+            switchView('kasir', kasirBtn);
+            
+            // Auto add Renewal package to cart (ID 13)
+            let renewalProd = products.find(p => p.id === 13);
+            if (!renewalProd) {
+                renewalProd = { id: 13, name: "Perpanjangan Platinum 1 Tahun", category: "tiket", price: 3500000, img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&auto=format&fit=crop", stock: 999 };
+                products.push(renewalProd);
+                // Re-render if in Suplemen tab etc. (Not strictly needed since we just navigate)
+            }
+            addToCart(13);
+            
+            // Focus on member input
+            document.getElementById('member-input').value = document.getElementById('checkin-input').value;
+            cekMember();
+        }
+
+        // View Switcher Logic
+        function switchView(viewId, btnElement) {
+            // Hide all views
+            document.querySelectorAll('.view-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+            
+            // Show target view
+            const target = document.getElementById('view-' + viewId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // If btnElement is provided, update sidebar active states
+            if (btnElement) {
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('bg-gradient-to-r', 'from-aagreen/20', 'to-transparent', 'text-aagreen', 'border-l-4', 'border-aagreen', 'active');
+                    btn.classList.add('text-gray-500');
+                });
+                
+                btnElement.classList.remove('text-gray-500');
+                btnElement.classList.add('bg-gradient-to-r', 'from-aagreen/20', 'to-transparent', 'text-aagreen', 'border-l-4', 'border-aagreen', 'active');
+            }
+        }
+
+        // Pendaftaran Member Baru Logic
+        function bukaDaftarBaru() {
+            switchView('daftar-member', null);
+            // Optionally remove active states from all sidebar buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-gradient-to-r', 'from-aagreen/20', 'to-transparent', 'text-aagreen', 'border-l-4', 'border-aagreen', 'active');
+                btn.classList.add('text-gray-500');
+            });
+        }
+
+        function prosesPendaftaranBaru() {
+            const name = document.getElementById('reg-name').value;
+            if (name.trim() === '') {
+                showCustomAlert('Silakan masukkan nama member terlebih dahulu.');
+                return;
+            }
+            
+            const pt = document.getElementById('reg-trainer').value;
+
+            // Get selected package
+            const paket = document.querySelector('input[name="reg-paket"]:checked').value;
+
+            // Generate Member ID
+            const newMemberId = 'AAGYM-' + Math.floor(Math.random() * 9000 + 1000);
+
+            // Add packages to cart logic
+            const kasirBtn = document.querySelectorAll('.nav-btn')[0]; // Kasir is first
+            switchView('kasir', kasirBtn);
+
+            if (paket === 'Mingguan') {
+                let prod = products.find(p => p.id === 17);
+                if (!prod) {
+                    products.push({ id: 17, name: "Pendaftaran Member Mingguan", category: "tiket", price: 100000, img: "logo gym.jpg", stock: 999 });
+                }
+                addToCart(17);
+            } else if (paket === 'Basic') {
+                let prod = products.find(p => p.id === 14);
+                if (!prod) {
+                    products.push({ id: 14, name: "Pendaftaran Member Basic (1 Bulan)", category: "tiket", price: 350000, img: "logo gym.jpg", stock: 999 });
+                }
+                addToCart(14);
+            } else {
+                let prod = products.find(p => p.id === 15);
+                if (!prod) {
+                    products.push({ id: 15, name: "Pendaftaran Member Platinum (1 Tahun)", category: "tiket", price: 3500000, img: "logo gym.jpg", stock: 999 });
+                }
+                addToCart(15);
+            }
+
+            // If PT selected
+            if (pt !== 'none') {
+                let prodPT = products.find(p => p.id === 16);
+                if (!prodPT) {
+                    products.push({ id: 16, name: "Sesi Personal Trainer (1 Bulan)", category: "tiket", price: 1000000, img: "logo gym.jpg", stock: 999 });
+                }
+                addToCart(16);
+            }
+
+            // Auto fill member input in kasir to give them discount immediately if applicable
+            document.getElementById('member-input').value = newMemberId;
+            cekMember();
+            
+            // Clear form
+            document.getElementById('reg-name').value = '';
+            document.getElementById('reg-phone').value = '';
+            document.getElementById('reg-trainer').value = 'none';
+            updateTrainerSchedule(); // Reset calendar
+        }
+
+        // Calendar Logic
+        function updateTrainerSchedule() {
+            const trainer = document.getElementById('reg-trainer').value;
+            const container = document.getElementById('trainer-calendar-container');
+            const nameLabel = document.getElementById('trainer-name-label');
+            const grid = document.getElementById('calendar-grid');
+            const paket = document.querySelector('input[name="reg-paket"]:checked').value;
+            
+            grid.innerHTML = '';
+
+            if (trainer === 'none') {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+
+            let availableDays = [];
+            let times = [];
+            if (trainer === 'pt-budi') {
+                nameLabel.innerText = "(Coach Budi)";
+                availableDays = [1, 3, 5]; // Mon, Wed, Fri
+                times = "08:00 & 16:00";
+            } else if (trainer === 'pt-siti') {
+                nameLabel.innerText = "(Coach Siti)";
+                availableDays = [2, 4, 6]; // Tue, Thu, Sat
+                times = "07:00 & 17:00";
+            } else if (trainer === 'pt-arya') {
+                nameLabel.innerText = "(Coach Arya)";
+                availableDays = [0, 6]; // Sun, Sat
+                times = "10:00 & 14:00";
+            }
+
+            // Generate days based on package length
+            let numDays = 30; // Default for Basic (1 Bulan) or Platinum (1 Tahun - just show 1 month sample)
+            if (paket === 'Mingguan') {
+                numDays = 7;
+                document.getElementById('calendar-info-text').innerText = "*Berikut adalah jadwal rutin dalam 1 minggu ke depan untuk " + trainer.toUpperCase();
+            } else if (paket === 'Basic') {
+                document.getElementById('calendar-info-text').innerText = "*Berikut adalah jadwal rutin selama 1 bulan (30 Hari) untuk " + trainer.toUpperCase();
+            } else {
+                document.getElementById('calendar-info-text').innerText = "*Berikut adalah simulasi jadwal rutin di bulan pertama untuk " + trainer.toUpperCase();
+            }
+
+            let today = new Date();
+            let currentDayOfWeek = today.getDay(); 
+            
+            for (let i = 0; i < numDays; i++) {
+                let d = new Date();
+                d.setDate(today.getDate() + i);
+                let dayOfWeek = d.getDay();
+                let dateNum = d.getDate();
+                
+                let isAvailable = availableDays.includes(dayOfWeek);
+                
+                let box = document.createElement('div');
+                box.className = `p-2 rounded-lg border text-center flex flex-col justify-center ${isAvailable ? 'border-aagreen bg-aagreen/10 text-white' : 'border-gray-800 bg-[#050505] text-gray-600'}`;
+                
+                if (isAvailable) {
+                    box.innerHTML = `<span class="text-sm font-bold text-aagreen">${dateNum}</span><span class="text-[8px] text-gray-300 mt-1">${times}</span>`;
+                } else {
+                    box.innerHTML = `<span class="text-sm font-bold opacity-50">${dateNum}</span>`;
+                }
+                
+                // Offset first day correctly
+                if (i === 0) {
+                    box.style.gridColumnStart = dayOfWeek + 1;
+                }
+                
+                grid.appendChild(box);
+            }
+        }
+        // Kehadiran Filters
+        function toggleKehadiranFilterType() {
+            const isDate = document.getElementById('filter-keh-date').checked;
+            const dateInputs = document.getElementById('filter-keh-date-inputs');
+            const monthInputs = document.getElementById('filter-keh-month-inputs');
+
+            if (isDate) {
+                dateInputs.classList.remove('hidden');
+                dateInputs.classList.add('flex');
+                monthInputs.classList.add('hidden');
+                monthInputs.classList.remove('flex');
+            } else {
+                dateInputs.classList.add('hidden');
+                dateInputs.classList.remove('flex');
+                monthInputs.classList.remove('hidden');
+                monthInputs.classList.add('flex');
+            }
+        }
+
+        function terapkanFilterKehadiran() {
+            showCustomAlert('Filter berhasil diterapkan. (Simulasi: Menampilkan data kehadiran berdasarkan filter yang dipilih)');
+        }
+
+        // Custom Alert Logic
+        function showCustomAlert(message) {
+            document.getElementById('custom-alert-message').innerText = message;
+            const modal = document.getElementById('custom-alert-modal');
+            const modalContent = document.getElementById('custom-alert-content');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeCustomAlert() {
+            const modal = document.getElementById('custom-alert-modal');
+            const modalContent = document.getElementById('custom-alert-content');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Laporan Logic
+        function toggleFilterType() {
+            const type = document.querySelector('input[name="filter-type"]:checked').value;
+            if (type === 'date') {
+                document.getElementById('filter-date-inputs').classList.remove('hidden');
+                document.getElementById('filter-date-inputs').classList.add('flex');
+                document.getElementById('filter-month-inputs').classList.add('hidden');
+                document.getElementById('filter-month-inputs').classList.remove('flex');
+            } else {
+                document.getElementById('filter-month-inputs').classList.remove('hidden');
+                document.getElementById('filter-month-inputs').classList.add('flex');
+                document.getElementById('filter-date-inputs').classList.add('hidden');
+                document.getElementById('filter-date-inputs').classList.remove('flex');
+            }
+        }
+
+        function terapkanFilterLaporan() {
+            // Mock Data Generation
+            const tbody = document.getElementById('laporan-table-body');
+            tbody.innerHTML = '';
+            
+            const numRecords = Math.floor(Math.random() * 20) + 5; // 5 to 25 records
+            let totalRev = 0;
+            let membersCount = 0;
+
+            const methods = ['TUNAI', 'QRIS'];
+            const items = ['Whey Protein 500g', 'Membership Basic (1 Bulan)', 'Membership Platinum (1 Tahun)', 'Air Mineral', 'Sesi Personal Trainer'];
+
+            for (let i = 0; i < numRecords; i++) {
+                const isMemberItem = Math.random() > 0.6;
+                const itemStr = isMemberItem ? items[1 + Math.floor(Math.random()*2)] : items[0];
+                const price = isMemberItem ? 350000 : 250000;
+                const method = methods[Math.floor(Math.random() * methods.length)];
+                const memberId = isMemberItem || Math.random() > 0.5 ? 'AAGYM-' + Math.floor(Math.random()*9000+1000) : '-';
+                
+                totalRev += price;
+                if (isMemberItem) membersCount++;
+
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-800/50 hover:bg-[#1a1a1a]/50 transition text-gray-300';
+                tr.innerHTML = `
+                    <td class="p-4 font-mono text-xs">TRX-${Math.floor(Math.random()*1000000)}</td>
+                    <td class="p-4 text-xs">${new Date().toLocaleDateString('id-ID')} ${Math.floor(Math.random()*14+8)}:${Math.floor(Math.random()*50+10)}</td>
+                    <td class="p-4 truncate max-w-[150px] font-bold text-white">${itemStr}</td>
+                    <td class="p-4 font-mono text-aagreen">${memberId}</td>
+                    <td class="p-4 text-xs font-bold">${method}</td>
+                    <td class="p-4 text-right font-bold text-white">${formatRp(price)}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            // Update Summary
+            document.getElementById('lap-total-pendapatan').innerText = formatRp(totalRev);
+            document.getElementById('lap-total-transaksi').innerText = numRecords;
+            document.getElementById('lap-total-member').innerText = membersCount + ' Orang';
+        }
+
+        // Registrasi & Perpanjangan Member Logic
+        function bukaDaftarBaru() {
+            document.getElementById('reg-form-title').innerHTML = 'Registrasi <span class="text-aagreen">Member Baru</span>';
+            document.getElementById('reg-id-container').classList.add('hidden');
+            
+            // Clear form
+            document.getElementById('reg-name').value = '';
+            document.getElementById('reg-phone').value = '';
+            document.querySelector('input[name="reg-paket"][value="Basic"]').checked = true;
+            document.getElementById('reg-trainer').value = 'none';
+            
+            updateTrainerSchedule();
+            switchView('daftar-member', document.querySelectorAll('.nav-btn')[1]);
+        }
+
+        function bukaPerpanjangForm(id, nama, telp) {
+            document.getElementById('reg-form-title').innerHTML = 'Perpanjang Member: <span class="text-aagreen font-mono text-xl">' + id + '</span>';
+            
+            document.getElementById('reg-id-container').classList.remove('hidden');
+            document.getElementById('reg-id').value = id;
+            
+            document.getElementById('reg-name').value = nama;
+            document.getElementById('reg-phone').value = telp;
+            // Default to Basic
+            document.querySelector('input[name="reg-paket"][value="Basic"]').checked = true;
+            document.getElementById('reg-trainer').value = 'none';
+            
+            updateTrainerSchedule();
+            switchView('daftar-member', document.querySelectorAll('.nav-btn')[1]);
+        }
+
+        // Init
+        renderProducts();
+        
+        // Initialize Default Dates
+        const todayObj = new Date();
+        const today = todayObj.toISOString().split('T')[0];
+        document.getElementById('laporan-date-start').value = today;
+        document.getElementById('laporan-date-end').value = today;
+        document.getElementById('laporan-bulan').value = todayObj.getMonth() + 1;
+        document.getElementById('laporan-tahun').value = todayObj.getFullYear();
+        terapkanFilterLaporan(); // load initial data
+    </script>
+</body>
+</html>

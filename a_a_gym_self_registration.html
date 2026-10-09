@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.A Gym - Pilih Paket Membership</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900;900i&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                background-color: #050505 !important;
+                margin: 0; padding: 0;
+            }
+            body * { visibility: hidden; }
+            #invoice-print-area, #invoice-print-area * { visibility: visible; }
+            #invoice-print-area {
+                position: absolute; left: 0; top: 0; width: 100%; height: 100vh;
+                background-color: #0a0a0a !important; box-shadow: none !important; border: none !important;
+                padding: 40px !important;
+            }
+            .hide-on-print { display: none !important; }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aagreen: '#39FF14',
+                        aadark: '#0a0a0a',
+                        tred: '#ff4b4b',
+                        tgold: '#ffd700',
+                        tbronze: '#cd7f32',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background-color: #0a0a0a; 
+            color: #ffffff; 
+            background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .tier-card {
+            background: #121212;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        .tier-card:hover {
+            transform: translateY(-5px);
+            border-color: #39FF14;
+            box-shadow: 0 10px 30px -5px rgba(57, 255, 20, 0.15);
+        }
+        .dark-table th, .dark-table td {
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .dark-table tr:hover td {
+            background-color: rgba(255,255,255,0.03);
+        }
+    </style>
+</head>
+<body class="antialiased font-sans min-h-screen pb-20 relative">
+
+    <!-- Full Page Loader -->
+    <div id="page-loader" class="fixed inset-0 z-[9999] bg-[#0a0a0a] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-white mb-4">A.A <span class="text-aagreen">GYM</span></h1>
+            <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto mb-3">
+                <div id="loader-bar" class="h-full bg-white transition-all duration-100 ease-out" style="width: 0%;"></div>
+            </div>
+            <p id="loader-text" class="text-[10px] text-gray-500 font-bold tracking-[0.2em]">LOADING 0%</p>
+        </div>
+    </div>
+
+    <!-- Global Background Image & Glows -->
+    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" class="fixed inset-0 w-full h-full object-cover opacity-10 pointer-events-none z-0 mix-blend-luminosity" alt="Background">
+    <div class="fixed inset-0 bg-[#0a0a0a]/80 pointer-events-none z-0"></div>
+    <div class="fixed top-1/4 left-0 w-[600px] h-[600px] bg-aagreen rounded-full mix-blend-screen filter blur-[200px] opacity-[0.05] pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 right-0 w-[500px] h-[500px] bg-aagreen rounded-full mix-blend-screen filter blur-[200px] opacity-[0.04] pointer-events-none z-0"></div>
+
+    <!-- Navbar -->
+    <nav id="main-nav" class="fixed w-full z-50 transition-all duration-300 bg-[#121212]/95 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="a_a_gym_landing_page.html" class="flex items-center gap-3">
+                        <img src="logo%20gym.jpg" alt="A.A Gym Logo" class="h-12 w-12 rounded-full object-cover">
+                        <span class="text-2xl font-black italic tracking-tighter hidden sm:block text-white">A.A <span class="text-aagreen">GYM</span></span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-6 text-sm font-medium">
+                    <a href="a_a_gym_landing_page.html" class="nav-link text-gray-300 hover:text-white transition py-6">Beranda</a>
+                    <a href="a_a_gym_self_registration.html" class="nav-link text-aagreen hover:text-green-400 transition py-6">Membership</a>
+                    <a href="a_a_gym_gallery.html" class="nav-link text-gray-300 hover:text-white transition py-6">Galeri</a>
+
+                    <div class="group relative py-6">
+                        <a href="a_a_gym_landing_page.html#promo" class="nav-link text-gray-300 hover:text-white transition flex items-center gap-1">Pembaruan <i class="fas fa-chevron-down text-[10px] mt-0.5"></i></a>
+                        <div class="absolute top-full left-0 mt-[-10px] w-48 bg-[#1a1a1a]/95 backdrop-blur-md border border-gray-800 rounded-md shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            <div class="py-2">
+                                <a href="a_a_gym_check_member.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition"><i class="fas fa-id-card mr-1"></i> Cek Member</a>
+                                <a href="a_a_gym_fmbg.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Program Garansi</a>
+                                <a href="a_a_gym_self_registration.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Promo Menarik</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group relative py-6">
+                        <a href="a_a_gym_landing_page.html#kelas" class="nav-link text-gray-300 hover:text-white transition flex items-center gap-1">Kelas <i class="fas fa-chevron-down text-[10px] mt-0.5"></i></a>
+                        <div class="absolute top-full left-0 mt-[-10px] w-48 bg-[#1a1a1a]/95 backdrop-blur-md border border-gray-800 rounded-md shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            <div class="py-2">
+                                <a href="a_a_gym_landing_page.html#kelas" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Jadwal GX</a>
+                                <a href="a_a_gym_landing_page.html#kelas" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Jadwal Pilates+</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="a_a_gym_landing_page.html#trainer" class="nav-link text-gray-300 hover:text-white transition py-6">Klub Kami</a>
+
+                    <div class="flex items-center gap-2 ml-2">
+                        <div class="flex bg-[#1a1a1a] border border-gray-800 rounded-full p-1 cursor-pointer">
+                            <button class="px-3 py-1 rounded-full bg-gray-700 text-white shadow text-xs font-bold transition">ID</button>
+                            <button class="px-3 py-1 rounded-full text-gray-500 hover:text-white transition text-xs font-bold">EN</button>
+                        </div>
+                    </div>
+
+                    <a href="a_a_gym_self_registration.html" class="bg-aagreen text-aadark px-6 py-2.5 rounded-md font-bold hover:bg-green-400 hover:shadow-[0_0_15px_#39FF14] transition-all ml-4">
+                        Gabung Sekarang
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#0a0a0a]/95 backdrop-blur-xl z-[100] transform translate-x-full transition-transform duration-500 flex flex-col lg:hidden">
+        <div class="flex justify-between items-center p-6 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <img src="logo%20gym.jpg" alt="A.A Gym Logo" class="h-10 w-10 rounded-full object-cover">
+                <span class="text-xl font-black italic tracking-tighter text-white">A.A <span class="text-aagreen">GYM</span></span>
+            </div>
+            <button id="close-menu" class="text-gray-400 hover:text-white text-3xl focus:outline-none transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flex-grow flex flex-col p-6 overflow-y-auto space-y-4">
+            <a href="a_a_gym_landing_page.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Beranda</a>
+            <a href="a_a_gym_self_registration.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Membership</a>
+            <a href="a_a_gym_gallery.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Galeri</a>
+            
+            <div class="py-2 border-b border-gray-800 flex flex-col gap-3">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Pembaruan</span>
+                <a href="a_a_gym_check_member.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-id-card text-aagreen w-6"></i> Cek Member</a>
+                <a href="a_a_gym_fmbg.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-shield-alt text-aagreen w-6"></i> Program Garansi</a>
+                <a href="a_a_gym_self_registration.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-tags text-aagreen w-6"></i> Promo Menarik</a>
+            </div>
+
+            <div class="py-2 border-b border-gray-800 flex flex-col gap-3">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Kelas</span>
+                <a href="a_a_gym_landing_page.html#kelas" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-dumbbell text-aagreen w-6"></i> Jadwal GX</a>
+                <a href="a_a_gym_landing_page.html#kelas" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-burn text-aagreen w-6"></i> Jadwal Pilates+</a>
+            </div>
+            
+            <a href="a_a_gym_landing_page.html#trainer" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Klub Kami</a>
+            
+            <div class="mt-6 mb-10">
+                <a href="a_a_gym_self_registration.html" class="block text-center bg-aagreen text-aadark px-6 py-4 rounded-xl font-black text-lg shadow-[0_0_20px_rgba(57,255,20,0.4)] hover:bg-green-400 transition">
+                    Gabung Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="relative z-10 pt-24">
+        <!-- Stepper -->
+        <div class="max-w-3xl mx-auto pb-8 px-4">
+            <div class="flex justify-between items-center relative">
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-gray-800 -z-10"></div>
+                
+                <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="goToStep(1)">
+                    <div id="step-circle-1" class="w-8 h-8 rounded-full bg-aagreen text-aadark flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(57,255,20,0.5)]">1</div>
+                    <span id="step-text-1" class="text-xs font-bold text-white">Select Plan</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="goToStep(2)">
+                    <div id="step-circle-2" class="w-8 h-8 rounded-full bg-[#1a1a1a] border-2 border-gray-700 text-gray-500 flex items-center justify-center font-bold text-sm">2</div>
+                    <span id="step-text-2" class="text-xs font-bold text-gray-600">Jadwal</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="goToStep(3)">
+                    <div id="step-circle-3" class="w-8 h-8 rounded-full bg-[#1a1a1a] border-2 border-gray-700 text-gray-500 flex items-center justify-center font-bold text-sm">3</div>
+                    <span id="step-text-3" class="text-xs font-bold text-gray-600">Pembayaran</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 cursor-pointer">
+                    <div id="step-circle-4" class="w-8 h-8 rounded-full bg-[#1a1a1a] border-2 border-gray-700 text-gray-500 flex items-center justify-center font-bold text-sm">4</div>
+                    <span id="step-text-4" class="text-xs font-bold text-gray-600">Selesai</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header & Timer -->
+        <div id="step-1">
+            <div class="text-center mt-6 mb-12 px-4">
+            <h1 class="text-2xl md:text-3xl font-black uppercase text-white tracking-tight mb-2">PICK THE PLAN THAT BEST FITS YOUR NEEDS</h1>
+            <p class="font-bold text-aagreen tracking-widest text-sm mb-6">LIMITED OFFER JUST FOR YOU</p>
+            
+            <div class="flex justify-center gap-4">
+                <div class="bg-[#1a1a1a] px-4 py-2 rounded-lg border border-gray-800 flex flex-col items-center min-w-[70px] shadow-[0_0_15px_rgba(57,255,20,0.05)]">
+                    <span class="text-2xl font-black text-white">00</span>
+                    <span class="text-[10px] font-bold text-gray-500 tracking-wider">DAYS</span>
+                </div>
+                <div class="bg-[#1a1a1a] px-4 py-2 rounded-lg border border-gray-800 flex flex-col items-center min-w-[70px] shadow-[0_0_15px_rgba(57,255,20,0.05)]">
+                    <span class="text-2xl font-black text-white">23</span>
+                    <span class="text-[10px] font-bold text-gray-500 tracking-wider">HOURS</span>
+                </div>
+                <div class="bg-[#1a1a1a] px-4 py-2 rounded-lg border border-gray-800 flex flex-col items-center min-w-[70px] shadow-[0_0_15px_rgba(57,255,20,0.05)]">
+                    <span class="text-2xl font-black text-aagreen">58</span>
+                    <span class="text-[10px] font-bold text-gray-500 tracking-wider">MINUTES</span>
+                </div>
+                <div class="bg-[#1a1a1a] px-4 py-2 rounded-lg border border-gray-800 flex flex-col items-center min-w-[70px] shadow-[0_0_15px_rgba(57,255,20,0.05)]">
+                    <span class="text-2xl font-black text-aagreen animate-pulse">44</span>
+                    <span class="text-[10px] font-bold text-gray-500 tracking-wider">SECONDS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="max-w-[1200px] mx-auto px-4 lg:px-8 mb-24 mt-10">
+            <div class="flex flex-wrap justify-center gap-6 lg:gap-8">
+                
+                <!-- BASIC Card -->
+                <div class="tier-card w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[350px] bg-[#0a0a0a] border border-gray-800 p-8 flex flex-col relative overflow-hidden group rounded-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="absolute top-0 left-0 w-0 h-1 bg-aagreen group-hover:w-full transition-all duration-500 ease-out"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="mb-8 flex items-center gap-4">
+                            <img src="logo%20gym.jpg" class="w-10 h-10 rounded-full border border-gray-800 group-hover:border-aagreen transition">
+                            <h2 class="text-xl font-black tracking-widest text-white uppercase group-hover:text-aagreen transition">BASIC</h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Membership</p>
+                            <p class="text-xs text-gray-600 line-through mb-1">Rp 500.000/month</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-sm font-bold text-gray-500">Rp</span>
+                                <span class="text-5xl font-black tracking-tighter text-white">381</span>
+                                <span class="text-sm font-bold text-gray-500">K<span class="text-[10px]">/mo</span></span>
+                            </div>
+                            <button class="text-gray-400 text-xs font-bold flex items-center gap-2 group-hover:text-aagreen transition mb-8">See detail <i class="fas fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                        <button class="w-full bg-transparent border border-gray-700 text-white font-bold py-3.5 rounded-lg group-hover:bg-aagreen group-hover:text-black group-hover:border-aagreen transition-all duration-300">CHOOSE PLAN</button>
+                    </div>
+                </div>
+
+                <!-- ULTRA Card -->
+                <div class="tier-card w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[350px] bg-[#0a0a0a] border border-gray-800 p-8 flex flex-col relative overflow-hidden group rounded-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="absolute top-0 left-0 w-0 h-1 bg-aagreen group-hover:w-full transition-all duration-500 ease-out"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="mb-8 flex items-center gap-4">
+                            <img src="logo%20gym.jpg" class="w-10 h-10 rounded-full border border-gray-800 group-hover:border-aagreen transition">
+                            <h2 class="text-xl font-black tracking-widest text-white uppercase group-hover:text-aagreen transition">ULTRA</h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Membership</p>
+                            <p class="text-xs text-gray-600 line-through mb-1">Rp 1.000.000/month</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-sm font-bold text-gray-500">Rp</span>
+                                <span class="text-5xl font-black tracking-tighter text-white">475</span>
+                                <span class="text-sm font-bold text-gray-500">K<span class="text-[10px]">/mo</span></span>
+                            </div>
+                            <button class="text-gray-400 text-xs font-bold flex items-center gap-2 group-hover:text-aagreen transition mb-8">See detail <i class="fas fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                        <button class="w-full bg-transparent border border-gray-700 text-white font-bold py-3.5 rounded-lg group-hover:bg-aagreen group-hover:text-black group-hover:border-aagreen transition-all duration-300">CHOOSE PLAN</button>
+                    </div>
+                </div>
+
+                <!-- PILATES+ Card -->
+                <div class="tier-card w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[350px] bg-[#121212] border border-gray-700 p-8 flex flex-col relative overflow-hidden group rounded-2xl relative shadow-[0_0_30px_rgba(0,0,0,0.5)] transform lg:-translate-y-4">
+                    <!-- Recommended Badge -->
+                    <div class="absolute top-4 right-4 bg-gray-800 text-white text-[9px] font-black tracking-widest px-3 py-1 rounded-full border border-gray-600 group-hover:bg-aagreen group-hover:text-black group-hover:border-aagreen transition-colors">POPULAR</div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-800/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gray-600 group-hover:bg-aagreen transition-all duration-500 ease-out"></div>
+                    <div class="relative z-10 flex flex-col h-full mt-2">
+                        <div class="mb-8 flex items-center gap-4">
+                            <img src="logo%20gym.jpg" class="w-10 h-10 rounded-full border border-gray-600 group-hover:border-aagreen transition">
+                            <h2 class="text-xl font-black tracking-widest text-white uppercase group-hover:text-aagreen transition">PILATES+</h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Membership</p>
+                            <p class="text-xs text-gray-600 line-through mb-1">Rp 2.000.000/month</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-sm font-bold text-gray-400">Rp</span>
+                                <span class="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">899</span>
+                                <span class="text-sm font-bold text-gray-400">K<span class="text-[10px]">/mo</span></span>
+                            </div>
+                            <button class="text-gray-400 text-xs font-bold flex items-center gap-2 group-hover:text-aagreen transition mb-8">See detail <i class="fas fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                        <button class="w-full bg-white text-black font-bold py-3.5 rounded-lg group-hover:bg-aagreen transition-all duration-300">CHOOSE PLAN</button>
+                    </div>
+                </div>
+
+                <!-- PILATES RESERVE Card -->
+                <div class="tier-card w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[350px] bg-[#0a0a0a] border border-gray-800 p-8 flex flex-col relative overflow-hidden group rounded-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="absolute top-0 left-0 w-0 h-1 bg-aagreen group-hover:w-full transition-all duration-500 ease-out"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="mb-8 flex items-center gap-4">
+                            <img src="logo%20gym.jpg" class="w-10 h-10 rounded-full border border-gray-800 group-hover:border-aagreen transition">
+                            <h2 class="text-xl font-black tracking-widest text-white uppercase group-hover:text-aagreen transition leading-none">PILATES<br><span class="text-[9px] text-gray-500 tracking-[0.4em]">RESERVE</span></h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Membership</p>
+                            <p class="text-xs text-gray-600 line-through mb-1">Rp 2.500.000/month</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-sm font-bold text-gray-500">Rp</span>
+                                <span class="text-5xl font-black tracking-tighter text-white">1209</span>
+                                <span class="text-sm font-bold text-gray-500">K<span class="text-[10px]">/mo</span></span>
+                            </div>
+                            <button class="text-gray-400 text-xs font-bold flex items-center gap-2 group-hover:text-aagreen transition mb-8">See detail <i class="fas fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                        <button class="w-full bg-transparent border border-gray-700 text-white font-bold py-3.5 rounded-lg group-hover:bg-aagreen group-hover:text-black group-hover:border-aagreen transition-all duration-300">CHOOSE PLAN</button>
+                    </div>
+                </div>
+
+                <!-- INFINITE Card -->
+                <div class="tier-card w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[350px] bg-gradient-to-br from-[#121212] to-[#050505] border border-gray-800 p-8 flex flex-col relative overflow-hidden group rounded-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-800/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="absolute top-0 left-0 w-0 h-1 bg-white group-hover:w-full transition-all duration-500 ease-out"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="mb-8 flex items-center gap-4">
+                            <img src="logo%20gym.jpg" class="w-10 h-10 rounded-full border border-gray-700 group-hover:border-white transition">
+                            <h2 class="text-xl font-black tracking-widest text-white uppercase group-hover:text-white transition">INFINITE</h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Membership</p>
+                            <p class="text-xs text-gray-600 mb-1">Start from</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-sm font-bold text-gray-500">Rp</span>
+                                <span class="text-5xl font-black tracking-tighter text-white">7334</span>
+                                <span class="text-sm font-bold text-gray-500">K<span class="text-[10px]">/mo</span></span>
+                            </div>
+                            <button class="text-gray-400 text-xs font-bold flex items-center gap-2 group-hover:text-white transition mb-8">See detail <i class="fas fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                        <button class="w-full bg-gray-800 border border-gray-700 text-white font-bold py-3.5 rounded-lg group-hover:bg-white group-hover:text-black transition-all duration-300 mb-3">ASK MEMBERSHIP</button>
+                        <p class="text-[9px] text-center text-gray-600 leading-tight">Visit nearest A.A Gym to get more info.</p>
+                    </div>
+                </div>
+
+                <!-- FAMILY VIP Card -->
+                <div class="tier-card w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[350px] bg-[#0a0a0a] border border-gray-800 p-8 flex flex-col relative overflow-hidden group rounded-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                    <div class="absolute top-0 left-0 w-0 h-1 bg-aagreen group-hover:w-full transition-all duration-500 ease-out"></div>
+                    <div class="relative z-10 flex flex-col h-full">
+                        <div class="mb-8 flex items-center gap-4">
+                            <img src="logo%20gym.jpg" class="w-10 h-10 rounded-full border border-gray-800 group-hover:border-aagreen transition">
+                            <h2 class="text-xl font-black tracking-widest text-white uppercase group-hover:text-aagreen transition">FAMILY VIP</h2>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-2">Membership</p>
+                            <p class="text-xs text-gray-600 line-through mb-1">Rp 4.000.000/month</p>
+                            <div class="flex items-baseline gap-1 mb-6">
+                                <span class="text-sm font-bold text-gray-500">Rp</span>
+                                <span class="text-5xl font-black tracking-tighter text-white">2500</span>
+                                <span class="text-sm font-bold text-gray-500">K<span class="text-[10px]">/mo</span></span>
+                            </div>
+                            <button class="text-gray-400 text-xs font-bold flex items-center gap-2 group-hover:text-aagreen transition mb-8">See detail <i class="fas fa-arrow-right text-[10px]"></i></button>
+                        </div>
+                        <button class="w-full bg-transparent border border-gray-700 text-white font-bold py-3.5 rounded-lg group-hover:bg-aagreen group-hover:text-black group-hover:border-aagreen transition-all duration-300">CHOOSE PLAN</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Benefits Comparison -->
+        <div class="max-w-[1200px] mx-auto px-4 mb-32">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-black text-white uppercase tracking-tight">BENEFITS COMPARISON</h2>
+                <p class="text-gray-400 mt-2">Compare membership plans and see which features are included with each tier.</p>
+            </div>
+
+            <div class="bg-[#121212] rounded-2xl shadow-2xl overflow-hidden border border-gray-800">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[800px] dark-table">
+                        <thead>
+                            <tr>
+                                <th class="p-6 text-xl font-black w-2/5 text-white bg-[#0a0a0a]">Benefits</th>
+                                <th class="p-6 text-center w-[15%] bg-[#0a0a0a]"><span class="bg-gray-800 text-gray-300 font-bold tracking-wider px-3 py-1.5 rounded text-[10px]">BASIC</span></th>
+                                <th class="p-6 text-center w-[15%] bg-[#0a0a0a]"><span class="bg-gray-800 text-gray-300 font-bold tracking-wider px-3 py-1.5 rounded text-[10px]">ULTRA</span></th>
+                                <th class="p-6 text-center w-[15%] bg-[#0a0a0a]"><span class="bg-white text-black font-black tracking-wider px-3 py-1.5 rounded text-[10px]">PILATES+</span></th>
+                                <th class="p-6 text-center w-[15%] bg-[#0a0a0a]"><span class="bg-gray-800 text-gray-300 font-bold tracking-wider px-3 py-1.5 rounded text-[10px] leading-tight block">PILATES<br><span class="text-[8px] text-gray-500">RESERVE</span></span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-gray-400">
+                            <tr>
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-building text-aagreen w-5"></i> Access to A.A Gym clubs nationwide</td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr class="bg-[#0f0f0f]">
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-building text-aagreen w-5"></i> Access to Ultra clubs nationwide</td>
+                                <td class="p-4 text-center"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-building text-aagreen w-5"></i> Access to Stride Gym clubs</td>
+                                <td class="p-4 text-center"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr class="bg-[#0f0f0f]">
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-building text-aagreen w-5"></i> Access to Pilates Reserve</td>
+                                <td class="p-4 text-center"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            
+                            <!-- Group Pilates Classes -->
+                            <tr>
+                                <td class="p-4 pl-6">
+                                    <div class="font-semibold flex items-start gap-3">
+                                        <i class="fas fa-running text-aagreen w-5 mt-1"></i> 
+                                        <div>
+                                            Access to all Group Pilates classes
+                                            <ul class="text-xs text-gray-600 font-normal mt-2 space-y-1">
+                                                <li>- Konnect Method</li>
+                                                <li>- Megacore</li>
+                                                <li>- Reformer & Chair</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-center align-top pt-6"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center align-top pt-6"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center align-top pt-6"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center align-top pt-6"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+
+                            <tr class="bg-[#0f0f0f]">
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-users text-aagreen w-5"></i> Unlimited group exercise classes</td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-tshirt text-aagreen w-5"></i> FREE towel rental & access 24/7</td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr class="bg-[#0f0f0f]">
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-hot-tub text-aagreen w-5"></i> Access to steam room & sauna</td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-umbrella-beach text-aagreen w-5"></i> Access our Beach Club</td>
+                                <td class="p-4 text-center"><span class="text-gray-700">-</span></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                            <tr class="bg-[#0f0f0f]">
+                                <td class="p-4 pl-6 font-semibold flex items-center gap-3"><i class="fas fa-medal text-aagreen w-5"></i> Money Back Guarantee</td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-aagreen"></i></td>
+                                <td class="p-4 text-center"><i class="fas fa-check text-white"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div> <!-- End of step-1 -->
+
+        <!-- Step 2: Jadwal -->
+        <div id="step-2" class="hidden max-w-6xl mx-auto px-4 mt-10 mb-32">
+            <h2 class="text-3xl font-black text-white uppercase tracking-tight mb-8 text-center">PILIH PARTNER & JADWAL MULAI</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left: Partner Selection & Data Diri -->
+                <div class="lg:col-span-5 space-y-8">
+                    <!-- Data Diri Form -->
+                    <div class="bg-[#121212] p-8 rounded-3xl border border-gray-800">
+                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2"><i class="fas fa-user text-aagreen"></i> 1. Informasi Data Diri</h3>
+                        <div class="space-y-4">
+                            <div id="renewal-id-container" class="hidden">
+                                <label class="block text-xs font-bold text-aagreen uppercase tracking-widest mb-2"><i class="fas fa-sync-alt mr-1"></i> ID Member (Perpanjangan)</label>
+                                <input type="text" id="cust-member-id" class="w-full bg-aagreen/10 border border-aagreen text-aagreen font-bold rounded-xl px-4 py-3 focus:outline-none" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Lengkap</label>
+                                <input type="text" id="cust-name" placeholder="Masukkan nama Anda" class="w-full bg-[#0a0a0a] border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-aagreen transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Nomor WhatsApp</label>
+                                <input type="tel" id="cust-phone" placeholder="Contoh: 081234567890" class="w-full bg-[#0a0a0a] border border-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-aagreen transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pilih Partner -->
+                    <div class="bg-[#121212] p-8 rounded-3xl border border-gray-800">
+                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2"><i class="fas fa-user-ninja text-aagreen"></i> 2. Pilih Personal Trainer</h3>
+                        <div class="space-y-4" id="partner-list">
+                        <!-- Partner 1 -->
+                        <label class="cursor-pointer group block">
+                            <input type="radio" name="partner" value="rani" class="peer hidden" checked onchange="updateSchedule('rani')">
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-gray-800 peer-checked:border-aagreen peer-checked:bg-[#1a2e15]/40 transition-all duration-300 hover:border-gray-600">
+                                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=150&auto=format&fit=crop" class="w-14 h-14 rounded-xl object-cover">
+                                <div class="flex-grow">
+                                    <h4 class="text-white font-bold text-lg">Rani</h4>
+                                    <p class="text-aagreen text-[10px] font-bold tracking-wider uppercase">Pilates Expert</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 flex items-center justify-center peer-checked:border-aagreen peer-checked:bg-aagreen transition-colors">
+                                    <i class="fas fa-check text-black text-xs opacity-0 peer-checked:opacity-100"></i>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Partner 2 -->
+                        <label class="cursor-pointer group block">
+                            <input type="radio" name="partner" value="rauzan" class="peer hidden" onchange="updateSchedule('rauzan')">
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-gray-800 peer-checked:border-aagreen peer-checked:bg-[#1a2e15]/40 transition-all duration-300 hover:border-gray-600">
+                                <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?q=80&w=150&auto=format&fit=crop" class="w-14 h-14 rounded-xl object-cover">
+                                <div class="flex-grow">
+                                    <h4 class="text-white font-bold text-lg">Rauzan</h4>
+                                    <p class="text-aagreen text-[10px] font-bold tracking-wider uppercase">Muscle Building</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 flex items-center justify-center peer-checked:border-aagreen peer-checked:bg-aagreen transition-colors">
+                                    <i class="fas fa-check text-black text-xs opacity-0 peer-checked:opacity-100"></i>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Partner 3 -->
+                        <label class="cursor-pointer group block">
+                            <input type="radio" name="partner" value="richard" class="peer hidden" onchange="updateSchedule('richard')">
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-gray-800 peer-checked:border-aagreen peer-checked:bg-[#1a2e15]/40 transition-all duration-300 hover:border-gray-600">
+                                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=150&auto=format&fit=crop" class="w-14 h-14 rounded-xl object-cover">
+                                <div class="flex-grow">
+                                    <h4 class="text-white font-bold text-lg">Richard</h4>
+                                    <p class="text-aagreen text-[10px] font-bold tracking-wider uppercase">CrossFit & Cardio</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 flex items-center justify-center peer-checked:border-aagreen peer-checked:bg-aagreen transition-colors">
+                                    <i class="fas fa-check text-black text-xs opacity-0 peer-checked:opacity-100"></i>
+                                </div>
+                            </div>
+                        </label>
+                        <!-- Partner 4 -->
+                        <label class="cursor-pointer group block">
+                            <input type="radio" name="partner" value="yulius" class="peer hidden" onchange="updateSchedule('yulius')">
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-[#0a0a0a] border border-gray-800 peer-checked:border-aagreen peer-checked:bg-[#1a2e15]/40 transition-all duration-300 hover:border-gray-600">
+                                <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=150&auto=format&fit=crop" class="w-14 h-14 rounded-xl object-cover">
+                                <div class="flex-grow">
+                                    <h4 class="text-white font-bold text-lg">Yulius</h4>
+                                    <p class="text-aagreen text-[10px] font-bold tracking-wider uppercase">Weight Loss</p>
+                                </div>
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-600 flex items-center justify-center peer-checked:border-aagreen peer-checked:bg-aagreen transition-colors">
+                                    <i class="fas fa-check text-black text-xs opacity-0 peer-checked:opacity-100"></i>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Right: Schedule Selection -->
+                <div class="lg:col-span-7 bg-[#121212] p-8 rounded-3xl border border-gray-800 flex flex-col">
+                    <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2"><i class="fas fa-calendar-alt text-aagreen"></i> 3. Jadwal <span id="schedule-for-name" class="text-aagreen ml-1">Rani</span></h3>
+                    
+                    <div id="schedule-container" class="flex-grow">
+                        <!-- Custom Calendar UI -->
+                        <div class="mb-6 bg-[#0a0a0a] border border-gray-800 rounded-2xl p-6">
+                            <!-- Calendar Header -->
+                            <div class="flex justify-between items-center mb-6">
+                                <button class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition"><i class="fas fa-chevron-left text-xs"></i></button>
+                                <span class="font-bold text-white uppercase tracking-widest text-sm">Oktober 2026</span>
+                                <button class="w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition"><i class="fas fa-chevron-right text-xs"></i></button>
+                            </div>
+                            
+                            <!-- Days Header -->
+                            <div class="grid grid-cols-7 gap-y-4 gap-x-2 text-center mb-4 border-b border-gray-800 pb-2">
+                                <div class="text-[10px] font-bold text-gray-500">MIN</div>
+                                <div class="text-[10px] font-bold text-gray-500">SEN</div>
+                                <div class="text-[10px] font-bold text-gray-500">SEL</div>
+                                <div class="text-[10px] font-bold text-gray-500">RAB</div>
+                                <div class="text-[10px] font-bold text-gray-500">KAM</div>
+                                <div class="text-[10px] font-bold text-gray-500">JUM</div>
+                                <div class="text-[10px] font-bold text-gray-500">SAB</div>
+                            </div>
+
+                            <!-- Calendar Grid -->
+                            <div class="grid grid-cols-7 gap-y-3 gap-x-2 text-center" id="calendar-days">
+                                <!-- JS will populate days here -->
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-gray-400 font-semibold mb-4 text-sm" id="time-header">Waktu Tersedia</h4>
+                        <!-- Time Slots -->
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-3" id="time-slots">
+                            <!-- JS will populate times -->
+                        </div>
+                    </div>
+
+                    <button onclick="proceedToPayment()" class="w-full bg-aagreen text-black font-bold py-4 rounded-xl hover:bg-green-400 transition-all text-lg shadow-[0_0_20px_rgba(57,255,20,0.3)] mt-8 uppercase tracking-wider">Lanjut Pembayaran <i class="fas fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Pembayaran -->
+        <div id="step-3" class="hidden max-w-6xl mx-auto px-4 mt-10 mb-32">
+            <h2 class="text-3xl font-black text-white uppercase tracking-tight mb-8 text-center">RINGKASAN & PEMBAYARAN</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left: Order Summary -->
+                <div class="lg:col-span-5 bg-[#121212] p-8 rounded-3xl border border-gray-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2"><i class="fas fa-receipt text-aagreen"></i> Detail Pesanan</h3>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+                                <span class="text-gray-400 text-sm">Paket</span>
+                                <span class="text-white font-bold tracking-wider" id="summary-plan">PILATES+</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+                                <span class="text-gray-400 text-sm">Personal Trainer</span>
+                                <span class="text-white font-bold" id="summary-partner">Rani</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+                                <span class="text-gray-400 text-sm">Jadwal Sesi Pertama</span>
+                                <div class="text-right">
+                                    <div class="text-white font-bold" id="summary-date">14 Okt 2026</div>
+                                    <div class="text-gray-500 text-xs" id="summary-time">09:00 WIB</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-[#0a0a0a] rounded-2xl p-6 border border-gray-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-400">Subtotal</span>
+                            <span class="text-gray-300" id="summary-subtotal">Rp 899.000</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-400">Admin Fee</span>
+                            <span class="text-gray-300">Rp 2.500</span>
+                        </div>
+                        <div id="renewal-discount-container" class="hidden justify-between items-center mb-4">
+                            <span class="text-aagreen font-bold">Diskon Perpanjangan <i class="fas fa-tag"></i></span>
+                            <span class="text-aagreen font-bold" id="summary-discount">- Rp 50.000</span>
+                        </div>
+                        <div class="flex justify-between items-end border-t border-gray-700 pt-4">
+                            <span class="text-white font-bold text-lg">Total Pembayaran</span>
+                            <span class="text-aagreen font-black text-2xl" id="summary-total">Rp 901.500</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Payment Method (QRIS) -->
+                <div class="lg:col-span-7 bg-[#121212] p-8 rounded-3xl border border-gray-800 text-center flex flex-col justify-center items-center">
+                    <div class="bg-red-600 px-6 py-2 rounded-xl mb-6 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+                        <h3 class="text-3xl font-black text-white italic tracking-tighter">QRIS</h3>
+                    </div>
+                    <p class="text-gray-400 mb-6 text-sm max-w-sm">Scan QR code di bawah ini menggunakan aplikasi M-Banking atau e-Wallet Anda (Gopay, OVO, Dana, ShopeePay).</p>
+                    
+                    <!-- QR Mockup -->
+                    <div class="bg-white p-4 rounded-2xl mb-8 inline-block shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" class="w-48 h-48">
+                    </div>
+                    
+                    <div class="w-full max-w-sm mb-8">
+                        <p class="text-gray-500 text-xs mb-2 uppercase tracking-widest">Waktu Pembayaran Tersisa</p>
+                        <p class="text-white font-mono text-3xl font-bold tracking-widest" id="qris-timer">15:00</p>
+                    </div>
+
+                    <button onclick="confirmPayment()" class="w-full max-w-md bg-aagreen text-black font-bold py-4 rounded-xl hover:bg-green-400 transition-all text-lg shadow-[0_0_20px_rgba(57,255,20,0.3)] uppercase tracking-wider">
+                        Saya Sudah Bayar <i class="fas fa-check-circle ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Selesai -->
+        <div id="step-4" class="hidden max-w-4xl mx-auto px-4 mt-10 mb-32">
+            <div id="invoice-print-area" class="bg-gradient-to-br from-[#121212] to-[#0a0a0a] p-10 md:p-14 rounded-3xl border border-aagreen/30 shadow-[0_0_50px_rgba(57,255,20,0.1)] relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-aagreen/5 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="flex flex-col md:flex-row items-center md:items-start justify-between mb-12 border-b border-gray-800 pb-10">
+                    <div class="flex items-center gap-6 mb-6 md:mb-0">
+                        <div class="w-20 h-20 rounded-full bg-aagreen/20 flex items-center justify-center border-2 border-aagreen relative">
+                            <div class="absolute inset-0 bg-aagreen/20 animate-ping rounded-full"></div>
+                            <i class="fas fa-check text-aagreen text-4xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-1">PEMBAYARAN LUNAS</h2>
+                            <p class="text-aagreen font-bold tracking-widest text-sm uppercase">Terima Kasih, <span id="success-name">Customer</span>!</p>
+                        </div>
+                    </div>
+                    <div class="text-center md:text-right flex flex-col items-center md:items-end">
+                        <div class="hidden print:flex items-center gap-2 mb-4">
+                            <span class="text-xl font-black italic tracking-tighter text-white">A.A <span class="text-aagreen">GYM</span></span>
+                        </div>
+                        <p class="text-gray-500 text-xs font-bold tracking-widest uppercase mb-1">INVOICE NUMBER</p>
+                        <p class="text-white font-mono text-xl font-bold bg-white/5 px-4 py-1 rounded-lg border border-gray-800 print:border-gray-600" id="invoice-number">#INV-20261009</p>
+                    </div>
+                </div>
+                
+                <!-- Receipt Details -->
+                <div class="bg-[#050505] rounded-2xl border border-gray-800 p-8 mb-10 relative">
+                    <!-- Receipt zigzag pattern -->
+                    <div class="absolute -top-3 left-0 w-full h-3 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHBvbHlnb24gcG9pbnRzPSIwLDEwIDUsMCAxMCwxMCIgZmlsbD0iIzA1MDUwNSIvPjwvc3ZnPg==')] repeat-x"></div>
+                    
+                    <h3 class="text-lg font-bold text-white mb-6 border-b border-gray-800 pb-4">Rincian Pembelian</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Paket Membership</p>
+                                <p class="text-white font-bold text-lg" id="success-plan">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Personal Trainer</p>
+                                <p class="text-white font-bold text-lg" id="success-partner">-</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Jadwal Sesi Pertama</p>
+                                <p class="text-white font-bold text-lg" id="success-date">-</p>
+                                <p class="text-gray-400 text-sm" id="success-time">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">Kontak Pemesan</p>
+                                <p class="text-gray-300" id="success-phone">-</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between items-end">
+                        <span class="text-gray-400 font-bold uppercase tracking-widest">TOTAL DIBAYAR</span>
+                        <span class="text-aagreen font-black text-3xl md:text-4xl" id="success-total">Rp -</span>
+                    </div>
+                    
+                    <div class="absolute -bottom-3 left-0 w-full h-3 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgNSwxMCAxMCwwIiBmaWxsPSIjMDUwNTA1Ii8+PC9zdmc+')] repeat-x"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-12 hide-on-print">
+                    <button onclick="downloadPDF()" class="flex-1 max-w-xs bg-[#1a1a1a] border border-gray-700 text-white font-bold py-4 rounded-xl hover:bg-gray-800 hover:border-gray-500 transition-all text-lg tracking-wider flex items-center justify-center gap-3">
+                        <i class="fas fa-file-download text-aagreen"></i> Cetak PDF
+                    </button>
+                    <a href="a_a_gym_landing_page.html" class="flex-1 max-w-xs bg-aagreen text-black font-bold py-4 rounded-xl hover:bg-green-400 transition-all text-lg tracking-wider flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(57,255,20,0.3)]">
+                        <i class="fas fa-home"></i> Ke Beranda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function goToStep(step) {
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-3').classList.add('hidden');
+        const step4 = document.getElementById('step-4');
+        if(step4) step4.classList.add('hidden');
+        
+        document.getElementById('step-' + step).classList.remove('hidden');
+        
+        for (let i = 1; i <= 4; i++) {
+            const circle = document.getElementById('step-circle-' + i);
+            const text = document.getElementById('step-text-' + i);
+            if (i < step) {
+                circle.className = 'w-8 h-8 rounded-full bg-aagreen text-aadark flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(57,255,20,0.5)]';
+                circle.innerHTML = '<i class="fas fa-check"></i>';
+                text.className = 'text-xs font-bold text-aagreen';
+            } else if (i === step) {
+                circle.className = 'w-8 h-8 rounded-full bg-aagreen text-aadark flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(57,255,20,0.5)]';
+                circle.innerHTML = i;
+                text.className = 'text-xs font-bold text-white';
+            } else {
+                circle.className = 'w-8 h-8 rounded-full bg-[#1a1a1a] border-2 border-gray-700 text-gray-500 flex items-center justify-center font-bold text-sm';
+                circle.innerHTML = i;
+                text.className = 'text-xs font-bold text-gray-600';
+            }
+        }
+        
+        window.scrollTo(0, 0);
+    }
+    
+    const orderData = {
+        planName: '-',
+        planPrice: 0,
+        partnerName: '-',
+        date: '-',
+        time: '-'
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.tier-card').forEach(card => {
+            const btn = card.querySelector('button.w-full');
+            const planName = card.querySelector('h2').innerText.replace(/\n/g, ' ').trim();
+            const priceElement = card.querySelector('.text-5xl');
+            let price = 0;
+            if (priceElement) {
+                price = parseInt(priceElement.innerText) * 1000;
+            }
+            
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    orderData.planName = planName;
+                    orderData.planPrice = price;
+                    goToStep(2);
+                });
+            }
+        });
+        updateSchedule('rani'); // Init first partner schedule
+        
+        // Auto-fill from query params (e.g., from check member renewal)
+        const urlParams = new URLSearchParams(window.location.search);
+        const prefillName = urlParams.get('name');
+        const prefillPhone = urlParams.get('phone');
+        const prefillId = urlParams.get('member_id');
+        if(prefillName) document.getElementById('cust-name').value = prefillName;
+        if(prefillPhone) document.getElementById('cust-phone').value = prefillPhone;
+        if(prefillId) {
+            document.getElementById('renewal-id-container').classList.remove('hidden');
+            document.getElementById('cust-member-id').value = prefillId;
+            orderData.isRenewal = true;
+            orderData.memberId = prefillId;
+        }
+    });
+
+    const partnerData = {
+        'rani': {
+            name: 'Rani',
+            availableDates: {
+                12: ['08:00', '10:00', '14:00'],
+                14: ['09:00', '15:00', '17:00'],
+                16: ['07:00', '11:00', '16:00'],
+                19: ['08:00', '10:00', '18:00']
+            }
+        },
+        'rauzan': {
+            name: 'Rauzan',
+            availableDates: {
+                13: ['16:00', '18:00', '20:00'],
+                15: ['15:00', '17:00', '19:00'],
+                20: ['08:00', '10:00'],
+                22: ['10:00', '12:00']
+            }
+        },
+        'richard': {
+            name: 'Richard',
+            availableDates: {
+                14: ['07:00', '09:00', '11:00'],
+                17: ['14:00', '16:00', '18:00'],
+                21: ['08:00', '13:00'],
+                24: ['06:00', '19:00']
+            }
+        },
+        'yulius': {
+            name: 'Yulius',
+            availableDates: {
+                15: ['11:00', '13:00'],
+                16: ['10:00', '12:00', '14:00'],
+                19: ['09:00', '15:00'],
+                23: ['08:00', '10:00']
+            }
+        }
+    };
+
+    let currentPartner = 'rani';
+    let selectedDate = 12;
+
+    function renderCalendar() {
+        const data = partnerData[currentPartner];
+        document.getElementById('schedule-for-name').innerText = data.name;
+        
+        // Auto-select first available date if current is not available
+        if (!data.availableDates[selectedDate]) {
+            selectedDate = parseInt(Object.keys(data.availableDates)[0]);
+        }
+        
+        const grid = document.getElementById('calendar-days');
+        grid.innerHTML = '';
+        
+        // October 2026 starts on Thursday (index 4 for Sunday=0)
+        for (let i = 0; i < 4; i++) {
+            grid.innerHTML += `<div class="p-2"></div>`;
+        }
+        
+        for (let day = 1; day <= 31; day++) {
+            const isAvailable = !!data.availableDates[day];
+            const isSelected = day === selectedDate;
+            
+            if (isAvailable) {
+                grid.innerHTML += `
+                    <div class="flex justify-center items-center">
+                        <button onclick="selectDate(${day})" class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all relative ${isSelected ? 'bg-aagreen text-black shadow-[0_0_10px_rgba(57,255,20,0.5)] scale-110' : 'text-white hover:bg-gray-800 border border-gray-700'}">
+                            ${day}
+                            ${isSelected ? '' : '<span class="absolute -bottom-1 w-1 h-1 bg-aagreen rounded-full"></span>'}
+                        </button>
+                    </div>
+                `;
+            } else {
+                grid.innerHTML += `
+                    <div class="flex justify-center items-center">
+                        <span class="w-8 h-8 flex items-center justify-center text-sm text-gray-700">${day}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        renderTimeSlots();
+    }
+
+    function selectDate(day) {
+        selectedDate = day;
+        renderCalendar();
+    }
+
+    function renderTimeSlots() {
+        const data = partnerData[currentPartner];
+        const times = data.availableDates[selectedDate] || [];
+        
+        document.getElementById('time-header').innerText = `Waktu Tersedia (${selectedDate} Okt 2026)`;
+        
+        const timeContainer = document.getElementById('time-slots');
+        timeContainer.innerHTML = '';
+        
+        if (times.length === 0) {
+            timeContainer.innerHTML = `<p class="col-span-full text-gray-500 text-sm italic">Tidak ada jadwal tersedia di tanggal ini.</p>`;
+            return;
+        }
+        
+        times.forEach((t, index) => {
+            const checked = index === 0 ? 'checked' : '';
+            timeContainer.innerHTML += `
+                <label class="cursor-pointer">
+                    <input type="radio" name="selected_time" value="${t}" class="peer hidden" ${checked}>
+                    <div class="bg-[#0a0a0a] border border-gray-700 rounded-lg py-3 text-center text-gray-300 font-bold peer-checked:bg-white peer-checked:text-black peer-checked:border-white hover:border-gray-500 transition-colors">
+                        ${t}
+                    </div>
+                </label>
+            `;
+        });
+    }
+    function updateSchedule(partnerId) {
+        currentPartner = partnerId;
+        renderCalendar();
+    }
+
+    function proceedToPayment() {
+        const name = document.getElementById('cust-name').value;
+        const phone = document.getElementById('cust-phone').value;
+        if (!name || !phone) {
+            alert('Mohon lengkapi Nama Lengkap dan Nomor WhatsApp Anda sebelum lanjut pembayaran.');
+            return;
+        }
+        orderData.customerName = name;
+        orderData.customerPhone = phone;
+
+        orderData.partnerName = partnerData[currentPartner].name;
+        orderData.date = selectedDate + " Okt 2026";
+        
+        const selectedTime = document.querySelector('input[name="selected_time"]:checked');
+        if (selectedTime) {
+            orderData.time = selectedTime.value;
+        } else {
+            alert("Silakan pilih waktu terlebih dahulu.");
+            return;
+        }
+        
+        const custNameEl = document.getElementById('summary-cust-name');
+        if (custNameEl) custNameEl.innerText = orderData.customerName;
+        
+        const custPhoneEl = document.getElementById('summary-cust-phone');
+        if (custPhoneEl) custPhoneEl.innerText = orderData.customerPhone;
+
+        document.getElementById('summary-plan').innerText = orderData.planName;
+        document.getElementById('summary-partner').innerText = orderData.partnerName;
+        document.getElementById('summary-date').innerText = orderData.date;
+        document.getElementById('summary-time').innerText = orderData.time + " WIB";
+        
+        const subtotal = orderData.planPrice;
+        const admin = 2500;
+        let discount = 0;
+        
+        if (orderData.isRenewal && subtotal > 0) {
+            discount = 50000; // Flat discount 50k for renewal
+            const discountContainer = document.getElementById('renewal-discount-container');
+            if(discountContainer) discountContainer.classList.replace('hidden', 'flex');
+        }
+        
+        orderData.totalPrice = subtotal > 0 ? (subtotal + admin - discount) : 0;
+        
+        document.getElementById('summary-subtotal').innerText = "Rp " + subtotal.toLocaleString('id-ID');
+        if (subtotal === 0) {
+            document.getElementById('summary-total').innerText = "Tanya Admin";
+        } else {
+            document.getElementById('summary-total').innerText = "Rp " + orderData.totalPrice.toLocaleString('id-ID');
+        }
+        
+        goToStep(3);
+        startQrisTimer();
+    }
+
+    let qrisInterval;
+    function startQrisTimer() {
+        let timeLeft = 15 * 60; // 15 minutes
+        const timerEl = document.getElementById('qris-timer');
+        if(qrisInterval) clearInterval(qrisInterval);
+        
+        qrisInterval = setInterval(() => {
+            timeLeft--;
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            timerEl.innerText = `${m}:${s}`;
+            if(timeLeft <= 0) clearInterval(qrisInterval);
+        }, 1000);
+    }
+
+    function confirmPayment() {
+        if(qrisInterval) clearInterval(qrisInterval);
+        
+        // Generate random invoice number and member ID
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('invoice-number').innerText = '#INV-20261009' + randomNum;
+        
+        if (orderData.isRenewal && orderData.memberId) {
+            document.getElementById('member-id').innerText = orderData.memberId;
+        } else {
+            const memberNum = Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('member-id').innerText = 'AAGYM-' + memberNum;
+        }
+        
+        // Populate Step 4
+        document.getElementById('success-name').innerText = orderData.customerName || 'Customer';
+        document.getElementById('success-plan').innerText = orderData.planName;
+        document.getElementById('success-partner').innerText = orderData.partnerName;
+        document.getElementById('success-date').innerText = orderData.date;
+        document.getElementById('success-time').innerText = orderData.time + " WIB";
+        document.getElementById('success-phone').innerText = orderData.customerPhone || '-';
+        document.getElementById('success-total').innerText = orderData.totalPrice > 0 ? "Rp " + orderData.totalPrice.toLocaleString('id-ID') : "Tanya Admin";
+        
+        goToStep(4);
+    }
+
+    function downloadPDF() {
+        window.print();
+    }
+</script>
+
+<!-- Loader JS -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let progress = 0;
+        const loaderBar = document.getElementById('loader-bar');
+        const loaderText = document.getElementById('loader-text');
+        const pageLoader = document.getElementById('page-loader');
+
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 15) + 5;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    pageLoader.style.opacity = '0';
+                    setTimeout(() => {
+                        pageLoader.style.display = 'none';
+                    }, 700);
+                }, 300);
+            }
+            if (loaderBar && loaderText) {
+                loaderBar.style.width = progress + '%';
+                loaderText.innerText = 'LOADING ' + progress + '%';
+            }
+        }, 50);
+    });
+
+</script>
+
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/6282227700189" target="_blank" class="fixed bottom-6 right-6 z-[100] group" aria-label="Chat WhatsApp">
+    <div class="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_15px_rgba(37,211,102,0.4)] group-hover:scale-110 transition-transform duration-300">
+        <!-- Ping Animation Aura -->
+        <div class="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-[ping_2s_ease-in-out_infinite]"></div>
+        <i class="fab fa-whatsapp text-3xl relative z-10"></i>
+    </div>
+</a>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuBtn && closeMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.remove('translate-x-full');
+                });
+                closeMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.add('translate-x-full');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - A.A Gym</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aagreen: '#39FF14',
+                        aadark: '#0a0a0a',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0a0a; color: #ffffff; overflow-x: hidden; }
+        .glass-card {
+            background: rgba(30, 30, 30, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="antialiased font-sans min-h-screen flex flex-col relative">
+
+    <!-- Full Page Loader -->
+    <div id="page-loader" class="fixed inset-0 z-[9999] bg-[#0a0a0a] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-white mb-4">A.A <span class="text-aagreen">GYM</span></h1>
+            <div class="w-64 h-1 bg-gray-800 rounded-full overflow-hidden mx-auto mb-3">
+                <div id="loader-bar" class="h-full bg-white transition-all duration-100 ease-out" style="width: 0%;"></div>
+            </div>
+            <p id="loader-text" class="text-[10px] text-gray-500 font-bold tracking-[0.2em]">LOADING 0%</p>
+        </div>
+    </div>
+
+    <!-- Global Background Glows -->
+    <div class="fixed top-[-200px] left-[-200px] w-[800px] h-[800px] bg-aagreen rounded-full mix-blend-screen filter blur-[150px] opacity-[0.06] pointer-events-none animate-[pulse_4s_ease-in-out_infinite]"></div>
+    <div class="fixed bottom-[-200px] right-[-200px] w-[800px] h-[800px] bg-emerald-900 rounded-full mix-blend-screen filter blur-[150px] opacity-[0.1] pointer-events-none animate-[pulse_6s_ease-in-out_infinite_reverse]"></div>
+
+    <!-- Navbar -->
+    <nav id="main-nav" class="fixed w-full z-50 transition-all duration-300 bg-[#121212]/95 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="a_a_gym_landing_page.html" class="flex items-center gap-3">
+                        <img src="logo%20gym.jpg" alt="A.A Gym Logo" class="h-12 w-12 rounded-full object-cover">
+                        <span class="text-2xl font-black italic tracking-tighter hidden sm:block text-white">A.A <span class="text-aagreen">GYM</span></span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-6 text-sm font-medium">
+                    <a href="a_a_gym_landing_page.html" class="nav-link text-gray-300 hover:text-white transition py-6">Beranda</a>
+                    <a href="a_a_gym_self_registration.html" class="text-gray-300 hover:text-white transition py-6">Membership</a>
+                    <a href="a_a_gym_gallery.html" class="nav-link text-aagreen hover:text-green-400 transition py-6">Galeri</a>
+
+                    <div class="group relative py-6">
+                        <a href="a_a_gym_landing_page.html#promo" class="nav-link text-gray-300 hover:text-white transition flex items-center gap-1">Pembaruan <i class="fas fa-chevron-down text-[10px] mt-0.5"></i></a>
+                        <div class="absolute top-full left-0 mt-[-10px] w-48 bg-[#1a1a1a]/95 backdrop-blur-md border border-gray-800 rounded-md shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            <div class="py-2">
+                                <a href="a_a_gym_check_member.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition"><i class="fas fa-id-card mr-1"></i> Cek Member</a>
+                                <a href="a_a_gym_fmbg.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Program Garansi</a>
+                                <a href="a_a_gym_self_registration.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Promo Menarik</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group relative py-6">
+                        <a href="a_a_gym_landing_page.html#kelas" class="nav-link text-gray-300 hover:text-white transition flex items-center gap-1">Kelas <i class="fas fa-chevron-down text-[10px] mt-0.5"></i></a>
+                        <div class="absolute top-full left-0 mt-[-10px] w-48 bg-[#1a1a1a]/95 backdrop-blur-md border border-gray-800 rounded-md shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            <div class="py-2">
+                                <a href="a_a_gym_landing_page.html#kelas" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Jadwal GX</a>
+                                <a href="a_a_gym_landing_page.html#kelas" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Jadwal Pilates+</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="a_a_gym_landing_page.html#trainer" class="nav-link text-gray-300 hover:text-white transition py-6">Klub Kami</a>
+
+                    <div class="flex items-center gap-2 ml-2">
+                        <div class="flex bg-[#1a1a1a] border border-gray-800 rounded-full p-1 cursor-pointer">
+                            <button class="px-3 py-1 rounded-full bg-gray-700 text-white shadow text-xs font-bold transition">ID</button>
+                            <button class="px-3 py-1 rounded-full text-gray-500 hover:text-white transition text-xs font-bold">EN</button>
+                        </div>
+                    </div>
+
+                    <a href="a_a_gym_self_registration.html" class="bg-aagreen text-aadark px-6 py-2.5 rounded-md font-bold hover:bg-green-400 hover:shadow-[0_0_15px_#39FF14] transition-all ml-4">
+                        Gabung Sekarang
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#0a0a0a]/95 backdrop-blur-xl z-[100] transform translate-x-full transition-transform duration-500 flex flex-col lg:hidden">
+        <div class="flex justify-between items-center p-6 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <img src="logo%20gym.jpg" alt="A.A Gym Logo" class="h-10 w-10 rounded-full object-cover">
+                <span class="text-xl font-black italic tracking-tighter text-white">A.A <span class="text-aagreen">GYM</span></span>
+            </div>
+            <button id="close-menu" class="text-gray-400 hover:text-white text-3xl focus:outline-none transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flex-grow flex flex-col p-6 overflow-y-auto space-y-4">
+            <a href="a_a_gym_landing_page.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Beranda</a>
+            <a href="a_a_gym_self_registration.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Membership</a>
+            <a href="a_a_gym_gallery.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Galeri</a>
+            
+            <div class="py-2 border-b border-gray-800 flex flex-col gap-3">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Pembaruan</span>
+                <a href="a_a_gym_check_member.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-id-card text-aagreen w-6"></i> Cek Member</a>
+                <a href="a_a_gym_fmbg.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-shield-alt text-aagreen w-6"></i> Program Garansi</a>
+                <a href="a_a_gym_self_registration.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-tags text-aagreen w-6"></i> Promo Menarik</a>
+            </div>
+
+            <div class="py-2 border-b border-gray-800 flex flex-col gap-3">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Kelas</span>
+                <a href="a_a_gym_landing_page.html#kelas" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-dumbbell text-aagreen w-6"></i> Jadwal GX</a>
+                <a href="a_a_gym_landing_page.html#kelas" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-burn text-aagreen w-6"></i> Jadwal Pilates+</a>
+            </div>
+            
+            <a href="a_a_gym_landing_page.html#trainer" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Klub Kami</a>
+            
+            <div class="mt-6 mb-10">
+                <a href="a_a_gym_self_registration.html" class="block text-center bg-aagreen text-aadark px-6 py-4 rounded-xl font-black text-lg shadow-[0_0_20px_rgba(57,255,20,0.4)] hover:bg-green-400 transition">
+                    Gabung Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Header -->
+    <header class="relative pt-40 pb-16 overflow-hidden flex flex-col items-center justify-center text-center px-4">
+        <div class="relative z-10 flex flex-col items-center max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-6 leading-tight drop-shadow-2xl">
+                Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-aagreen to-green-200 drop-shadow-[0_0_10px_rgba(57,255,20,0.5)]">A.A Gym</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-400 max-w-2xl font-medium leading-relaxed">
+                Jelajahi fasilitas premium kami, berbagai kelas yang interaktif, dan atmosfir komunitas kebugaran terbaik.
+            </p>
+        </div>
+    </header>
+
+    <!-- Full Gallery Section -->
+    <section class="max-w-7xl mx-auto px-4 pb-32 relative z-10 w-full">
+        <!-- Filter Tabs -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12" id="gallery-filters">
+            <button onclick="filterGallery('all', this)" class="filter-btn active px-6 py-2 rounded-full bg-aagreen text-black font-bold text-sm shadow-[0_0_15px_rgba(57,255,20,0.3)] transition">Semua</button>
+            <button onclick="filterGallery('fasilitas', this)" class="filter-btn px-6 py-2 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800 font-semibold text-sm transition">Fasilitas</button>
+            <button onclick="filterGallery('kelas', this)" class="filter-btn px-6 py-2 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800 font-semibold text-sm transition">Kelas</button>
+            <button onclick="filterGallery('komunitas', this)" class="filter-btn px-6 py-2 rounded-full border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800 font-semibold text-sm transition">Komunitas</button>
+        </div>
+
+        <!-- CSS Grid Gallery -->
+        <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Large Image -->
+            <div class="gallery-item relative overflow-hidden group rounded-xl md:col-span-2 md:row-span-2 h-[300px] md:h-full cursor-pointer shadow-lg transition-all duration-500" data-category="fasilitas">
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
+                <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-xl font-bold text-white mb-1">Zona Latihan Beban</h3>
+                    <p class="text-aagreen text-xs font-bold uppercase tracking-wider">Fasilitas</p>
+                </div>
+            </div>
+            
+            <!-- Standard Images -->
+            <div class="gallery-item relative overflow-hidden group rounded-xl h-[250px] cursor-pointer shadow-lg transition-all duration-500" data-category="kelas">
+                <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                <div class="absolute bottom-4 left-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-md font-bold text-white">Kelas Angkat Besi</h3>
+                </div>
+            </div>
+
+            <div class="gallery-item relative overflow-hidden group rounded-xl h-[250px] cursor-pointer shadow-lg transition-all duration-500" data-category="fasilitas">
+                <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                <div class="absolute bottom-4 left-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-md font-bold text-white">Area Kardio</h3>
+                </div>
+            </div>
+
+            <div class="gallery-item relative overflow-hidden group rounded-xl h-[250px] cursor-pointer shadow-lg transition-all duration-500" data-category="kelas">
+                <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                <div class="absolute bottom-4 left-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-md font-bold text-white">Latihan Kettlebell</h3>
+                </div>
+            </div>
+
+            <div class="gallery-item relative overflow-hidden group rounded-xl h-[250px] cursor-pointer shadow-lg transition-all duration-500" data-category="komunitas">
+                <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                <div class="absolute bottom-4 left-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-md font-bold text-white">Kelas CrossFit</h3>
+                </div>
+            </div>
+            
+            <div class="gallery-item relative overflow-hidden group rounded-xl h-[250px] cursor-pointer shadow-lg md:col-span-2 transition-all duration-500" data-category="kelas">
+                <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
+                <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-xl font-bold text-white mb-1">Studio Yoga & Pilates</h3>
+                    <p class="text-aagreen text-xs font-bold uppercase tracking-wider">Kelas</p>
+                </div>
+            </div>
+
+            <div class="gallery-item relative overflow-hidden group rounded-xl h-[250px] cursor-pointer shadow-lg md:col-span-2 transition-all duration-500" data-category="komunitas">
+                <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Galeri A.A Gym">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
+                <div class="absolute bottom-6 left-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition duration-500">
+                    <h3 class="text-xl font-bold text-white mb-1">Zona Angkat Beban Pria</h3>
+                    <p class="text-aagreen text-xs font-bold uppercase tracking-wider">Komunitas</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-16 text-center">
+            <a href="a_a_gym_self_registration.html" class="inline-block bg-aagreen text-aadark font-black uppercase tracking-widest py-4 px-10 rounded-xl hover:bg-green-400 transform hover:-translate-y-1 transition duration-300 shadow-[0_0_25px_rgba(57,255,20,0.4)] text-sm">
+                Gabung Bersama Kami
+            </a>
+        </div>
+    </section>
+
+<!-- Loader JS -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let progress = 0;
+        const loaderBar = document.getElementById('loader-bar');
+        const loaderText = document.getElementById('loader-text');
+        const pageLoader = document.getElementById('page-loader');
+
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 15) + 5;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    pageLoader.style.opacity = '0';
+                    setTimeout(() => {
+                        pageLoader.style.display = 'none';
+                    }, 700);
+                }, 300);
+            }
+            if (loaderBar && loaderText) {
+                loaderBar.style.width = progress + '%';
+                loaderText.innerText = 'LOADING ' + progress + '%';
+            }
+        }, 50);
+    });
+
+    // Gallery Filter Logic
+    function filterGallery(category, btnElement) {
+        // Update active button styles
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('bg-aagreen', 'text-black', 'shadow-[0_0_15px_rgba(57,255,20,0.3)]', 'active');
+            btn.classList.add('border-gray-700', 'text-gray-300', 'hover:bg-gray-800', 'hover:text-white');
+        });
+        
+        btnElement.classList.remove('border-gray-700', 'text-gray-300', 'hover:bg-gray-800', 'hover:text-white');
+        btnElement.classList.add('bg-aagreen', 'text-black', 'shadow-[0_0_15px_rgba(57,255,20,0.3)]', 'active');
+
+        // Filter items
+        const items = document.querySelectorAll('.gallery-item');
+        items.forEach(item => {
+            if (category === 'all' || item.getAttribute('data-category') === category) {
+                item.style.display = 'block';
+                // Add a small animation effect
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'scale(1)';
+                }, 50);
+            } else {
+                item.style.opacity = '0';
+                item.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    item.style.display = 'none';
+                }, 300); // Matches transition duration
+            }
+        });
+    }
+</script>
+
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/6282227700189" target="_blank" class="fixed bottom-6 right-6 z-[100] group" aria-label="Chat WhatsApp">
+    <div class="relative flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_4px_15px_rgba(37,211,102,0.4)] group-hover:scale-110 transition-transform duration-300">
+        <!-- Ping Animation Aura -->
+        <div class="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-[ping_2s_ease-in-out_infinite]"></div>
+        <i class="fab fa-whatsapp text-3xl relative z-10"></i>
+    </div>
+</a>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuBtn && closeMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.remove('translate-x-full');
+                });
+                closeMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.add('translate-x-full');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

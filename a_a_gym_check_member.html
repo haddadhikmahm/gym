@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.A Gym - Cek Status Member</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900;900i&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        aagreen: '#39FF14',
+                        aadark: '#0a0a0a',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        .glass-panel { background: rgba(18, 18, 18, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(57, 255, 20, 0.1); }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative selection:bg-aagreen selection:text-black">
+
+    <!-- Global Background -->
+    <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop" class="fixed inset-0 w-full h-full object-cover opacity-10 pointer-events-none z-0 mix-blend-luminosity" alt="Background">
+    <div class="fixed inset-0 bg-gradient-to-b from-[#0a0a0a]/80 to-[#050505] pointer-events-none z-0"></div>
+    <div class="fixed top-1/4 right-0 w-[500px] h-[500px] bg-aagreen rounded-full mix-blend-screen filter blur-[200px] opacity-[0.05] pointer-events-none z-0"></div>
+
+    <!-- Navbar -->
+    <nav id="main-nav" class="fixed w-full z-50 transition-all duration-300 bg-[#121212]/95 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="a_a_gym_landing_page.html" class="flex items-center gap-3">
+                        <img src="logo%20gym.jpg" alt="A.A Gym Logo" class="h-12 w-12 rounded-full object-cover">
+                        <span class="text-2xl font-black italic tracking-tighter hidden sm:block text-white">A.A <span class="text-aagreen">GYM</span></span>
+                    </a>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center space-x-6 text-sm font-medium">
+                    <a href="a_a_gym_landing_page.html" class="nav-link text-gray-300 hover:text-white transition py-6">Beranda</a>
+                    <a href="a_a_gym_self_registration.html" class="nav-link text-gray-300 hover:text-white transition py-6">Membership</a>
+                    <a href="a_a_gym_gallery.html" class="nav-link text-gray-300 hover:text-white transition py-6">Galeri</a>
+
+                    <div class="group relative py-6">
+                        <a href="a_a_gym_landing_page.html#promo" class="nav-link text-gray-300 hover:text-white transition flex items-center gap-1">Pembaruan <i class="fas fa-chevron-down text-[10px] mt-0.5"></i></a>
+                        <div class="absolute top-full left-0 mt-[-10px] w-48 bg-[#1a1a1a]/95 backdrop-blur-md border border-gray-800 rounded-md shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            <div class="py-2">
+                                <a href="a_a_gym_check_member.html" class="block px-4 py-2 text-sm text-aagreen hover:bg-aagreen hover:text-black font-semibold transition"><i class="fas fa-id-card mr-1"></i> Cek Member</a>
+                                <a href="a_a_gym_fmbg.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Program Garansi</a>
+                                <a href="a_a_gym_self_registration.html" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Promo Menarik</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group relative py-6">
+                        <a href="a_a_gym_landing_page.html#kelas" class="nav-link text-gray-300 hover:text-white transition flex items-center gap-1">Kelas <i class="fas fa-chevron-down text-[10px] mt-0.5"></i></a>
+                        <div class="absolute top-full left-0 mt-[-10px] w-48 bg-[#1a1a1a]/95 backdrop-blur-md border border-gray-800 rounded-md shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            <div class="py-2">
+                                <a href="a_a_gym_landing_page.html#kelas" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Jadwal GX</a>
+                                <a href="a_a_gym_landing_page.html#kelas" class="block px-4 py-2 text-sm text-gray-300 hover:bg-aagreen hover:text-black font-semibold transition">Jadwal Pilates+</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="a_a_gym_landing_page.html#trainer" class="nav-link text-gray-300 hover:text-white transition py-6">Klub Kami</a>
+
+                    <div class="flex items-center gap-2 ml-2">
+                        <div class="flex bg-[#1a1a1a] border border-gray-800 rounded-full p-1 cursor-pointer">
+                            <button class="px-3 py-1 rounded-full bg-gray-700 text-white shadow text-xs font-bold transition">ID</button>
+                            <button class="px-3 py-1 rounded-full text-gray-500 hover:text-white transition text-xs font-bold">EN</button>
+                        </div>
+                    </div>
+
+                    <a href="a_a_gym_self_registration.html" class="bg-aagreen text-aadark px-6 py-2.5 rounded-md font-bold hover:bg-green-400 hover:shadow-[0_0_15px_#39FF14] transition-all ml-4">
+                        Gabung Sekarang
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 bg-[#0a0a0a]/95 backdrop-blur-xl z-[100] transform translate-x-full transition-transform duration-500 flex flex-col lg:hidden">
+        <div class="flex justify-between items-center p-6 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <img src="logo%20gym.jpg" alt="A.A Gym Logo" class="h-10 w-10 rounded-full object-cover">
+                <span class="text-xl font-black italic tracking-tighter text-white">A.A <span class="text-aagreen">GYM</span></span>
+            </div>
+            <button id="close-menu" class="text-gray-400 hover:text-white text-3xl focus:outline-none transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="flex-grow flex flex-col p-6 overflow-y-auto space-y-4">
+            <a href="a_a_gym_landing_page.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Beranda</a>
+            <a href="a_a_gym_self_registration.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Membership</a>
+            <a href="a_a_gym_gallery.html" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Galeri</a>
+            
+            <div class="py-2 border-b border-gray-800 flex flex-col gap-3">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Pembaruan</span>
+                <a href="a_a_gym_check_member.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-id-card text-aagreen w-6"></i> Cek Member</a>
+                <a href="a_a_gym_fmbg.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-shield-alt text-aagreen w-6"></i> Program Garansi</a>
+                <a href="a_a_gym_self_registration.html" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-tags text-aagreen w-6"></i> Promo Menarik</a>
+            </div>
+
+            <div class="py-2 border-b border-gray-800 flex flex-col gap-3">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-widest">Kelas</span>
+                <a href="a_a_gym_landing_page.html#kelas" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-dumbbell text-aagreen w-6"></i> Jadwal GX</a>
+                <a href="a_a_gym_landing_page.html#kelas" class="text-xl font-bold text-gray-300 hover:text-white flex items-center gap-2"><i class="fas fa-burn text-aagreen w-6"></i> Jadwal Pilates+</a>
+            </div>
+            
+            <a href="a_a_gym_landing_page.html#trainer" class="text-2xl font-bold text-white hover:text-aagreen transition py-2 border-b border-gray-800">Klub Kami</a>
+            
+            <div class="mt-6 mb-10">
+                <a href="a_a_gym_self_registration.html" class="block text-center bg-aagreen text-aadark px-6 py-4 rounded-xl font-black text-lg shadow-[0_0_20px_rgba(57,255,20,0.4)] hover:bg-green-400 transition">
+                    Gabung Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center relative z-10 py-20 px-4">
+        <div class="max-w-3xl w-full">
+            
+            <!-- Search Section -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tight mb-4 text-white drop-shadow-lg">Cek Status <span class="text-aagreen">Member</span></h1>
+                <p class="text-gray-400 max-w-lg mx-auto mb-8 text-sm">Masukkan ID Member Anda untuk melihat detail paket, sisa waktu membership, dan status perpanjangan.</p>
+                
+                <form id="search-form" class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto" onsubmit="searchMember(event)">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-id-card text-gray-500"></i>
+                        </div>
+                        <input type="text" id="member-input" placeholder="Contoh: AAGYM-12345" class="w-full bg-[#121212] border-2 border-gray-800 text-white font-mono text-lg rounded-xl pl-12 pr-4 py-4 focus:outline-none focus:border-aagreen transition-all shadow-inner uppercase" required>
+                    </div>
+                    <button type="submit" class="bg-aagreen text-black font-bold py-4 px-8 rounded-xl hover:bg-green-400 hover:shadow-[0_0_20px_rgba(57,255,20,0.4)] transition-all whitespace-nowrap uppercase tracking-wider flex items-center justify-center gap-2">
+                        <i class="fas fa-search"></i> Cari
+                    </button>
+                </form>
+            </div>
+
+            <!-- Result Section (Hidden initially) -->
+            <div id="result-container" class="hidden opacity-0 transition-opacity duration-500">
+                <div class="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 text-[150px] text-white/[0.02] rotate-12 pointer-events-none">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-8 items-start relative z-10">
+                        <!-- Profile Card -->
+                        <div class="w-full md:w-1/3 bg-[#0a0a0a] rounded-2xl p-6 border border-gray-800 flex flex-col items-center text-center">
+                            <div class="w-24 h-24 rounded-full bg-gray-800 flex items-center justify-center mb-4 border-2 border-aagreen relative">
+                                <i class="fas fa-user text-3xl text-gray-400"></i>
+                                <div class="absolute -bottom-2 bg-aagreen text-black text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border-2 border-[#0a0a0a]">ACTIVE</div>
+                            </div>
+                            <h3 id="res-name" class="text-xl font-bold text-white mb-1">Budi Santoso</h3>
+                            <p id="res-id" class="text-aagreen font-mono text-sm tracking-wider mb-6">AAGYM-12345</p>
+                            
+                            <div class="w-full bg-[#151515] rounded-xl p-3 mb-2">
+                                <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">Paket Aktif</p>
+                                <p id="res-plan" class="text-white font-bold text-sm">ULTRA (6 BULAN)</p>
+                            </div>
+                            <div class="w-full bg-[#151515] rounded-xl p-3">
+                                <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">Personal Trainer</p>
+                                <p id="res-pt" class="text-white font-bold text-sm">Rauzan</p>
+                            </div>
+                        </div>
+
+                        <!-- Details & Action -->
+                        <div class="w-full md:w-2/3 flex flex-col justify-between h-full">
+                            <div>
+                                <h3 class="text-lg font-bold text-white mb-6 border-b border-gray-800 pb-4">Status Membership</h3>
+                                
+                                <div class="grid grid-cols-2 gap-6 mb-8">
+                                    <div>
+                                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1"><i class="far fa-calendar-check mr-1"></i> Mulai Gabung</p>
+                                        <p id="res-start" class="text-white text-base">01 Okt 2026</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1"><i class="far fa-calendar-times mr-1"></i> Tanggal Berakhir</p>
+                                        <p id="res-end" class="text-white text-base">01 Apr 2027</p>
+                                    </div>
+                                    <div class="col-span-2 bg-[#121212] rounded-lg p-3 border border-gray-800">
+                                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1"><i class="fas fa-phone-alt mr-1"></i> Nomor Telepon</p>
+                                        <p id="res-phone" class="text-white text-base font-mono">081234567890</p>
+                                    </div>
+                                </div>
+
+                                <div class="bg-[#1a1a1a] border border-gray-700 rounded-xl p-5 mb-8">
+                                    <div class="flex justify-between items-end mb-2">
+                                        <span class="text-gray-300 text-sm font-bold">Sisa Waktu</span>
+                                        <span id="res-days" class="text-aagreen font-black text-2xl">174 Hari</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                                        <div id="res-progress" class="h-full bg-aagreen" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onclick="renewMembership()" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-all text-lg tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg">
+                                <i class="fas fa-sync-alt"></i> Perpanjang Membership
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <script>
+        function searchMember(e) {
+            e.preventDefault();
+            const input = document.getElementById('member-input').value.trim().toUpperCase();
+            if(!input) return;
+            
+            const container = document.getElementById('result-container');
+            
+            // Dummy logic based on the last char of the input
+            const charCode = input.charCodeAt(input.length-1) || 65;
+            
+            document.getElementById('res-id').innerText = input;
+            
+            const btn = document.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mencari...';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                
+                container.classList.remove('hidden');
+                setTimeout(() => {
+                    container.classList.remove('opacity-0');
+                    container.classList.add('opacity-100');
+                }, 10);
+                
+                // If it ends with 0 or 1, make it "Expiring soon"
+                if (charCode % 3 === 0) {
+                    document.getElementById('res-days').innerText = "12 Hari";
+                    document.getElementById('res-days').className = "text-red-500 font-black text-2xl";
+                    document.getElementById('res-progress').style.width = "5%";
+                    document.getElementById('res-progress').className = "h-full bg-red-500";
+                    document.querySelector('.absolute.-bottom-2').innerText = "EXPIRING SOON";
+                    document.querySelector('.absolute.-bottom-2').className = "absolute -bottom-2 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border-2 border-[#0a0a0a]";
+                } else {
+                    document.getElementById('res-days').innerText = (charCode * 2 + 30) + " Hari";
+                    document.getElementById('res-days').className = "text-aagreen font-black text-2xl";
+                    document.getElementById('res-progress').style.width = "65%";
+                    document.getElementById('res-progress').className = "h-full bg-aagreen";
+                    document.querySelector('.absolute.-bottom-2').innerText = "ACTIVE";
+                    document.querySelector('.absolute.-bottom-2').className = "absolute -bottom-2 bg-aagreen text-black text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border-2 border-[#0a0a0a]";
+                }
+            }, 800);
+        }
+
+        function renewMembership() {
+            const name = document.getElementById('res-name').innerText;
+            const phone = document.getElementById('res-phone').innerText;
+            const id = document.getElementById('res-id').innerText;
+            window.location.href = `a_a_gym_self_registration.html?member_id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuBtn && closeMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.remove('translate-x-full');
+                });
+                closeMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.add('translate-x-full');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
